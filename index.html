@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sortilege — Find Your Table</title>
+<meta name="description" content="Tell Jordan what kind of game you're after, and get matched to a Sortilege table.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="sheet">
+
+  <header class="hero">
+    <div class="hero__art">
+      <img src="assets/art/sortilege-goliath.png" alt="" width="1600" height="985">
+    </div>
+    <div class="hero__body">
+      <h1>A Seat Is<br>Open At<br>The Table</h1>
+      <div class="rule-gold"></div>
+      <p>You scanned the code. Tell me a little about what you're after, and I'll find you a table &mdash; or build one.</p>
+    </div>
+  </header>
+
+  <form class="form" id="onboard" novalidate>
+
+    <!-- STUB: section list and every field below is a placeholder, pending the content pass. -->
+
+    <section class="sec">
+      <div class="sec__head">
+        <p class="eyebrow">WHO I'M TALKING TO</p>
+        <h2><span class="step">01</span><span>Your Name</span></h2>
+      </div>
+      <p class="lede">Nothing here is published anywhere. It comes to me by email.</p>
+
+      <div class="field">
+        <label for="name">NAME</label>
+        <input type="text" id="name" name="name" autocomplete="name">
+      </div>
+
+      <div class="field">
+        <label for="email">EMAIL</label>
+        <input type="email" id="email" name="email" autocomplete="email" inputmode="email">
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="sec__head">
+        <p class="eyebrow">BEFORE YOU SIT DOWN</p>
+        <h2><span class="step">02</span><span>You Do Not Need To Know Anything</span></h2>
+      </div>
+
+      <fieldset class="bare">
+        <legend class="lede">Where are you starting from?</legend>
+        <div class="choices">
+          <label class="choice">
+            <input type="radio" name="experience" value="none">
+            <span>
+              <span class="choice__title">NEVER PLAYED ANYTHING</span>
+              <span class="choice__note">Welcome. I assume zero knowledge, and I like teaching best of all.</span>
+            </span>
+          </label>
+          <label class="choice">
+            <input type="radio" name="experience" value="dnd-only">
+            <span>
+              <span class="choice__title">ONLY PLAYED D&amp;D</span>
+              <span class="choice__note">There are hundreds of other games, and most want something different from you than a fight.</span>
+            </span>
+          </label>
+          <label class="choice">
+            <input type="radio" name="experience" value="knows">
+            <span>
+              <span class="choice__title">I KNOW EXACTLY WHAT I WANT</span>
+              <span class="choice__note">Name it. Twenty-odd systems in rotation, and I'll learn a new one for the right table.</span>
+            </span>
+          </label>
+        </div>
+      </fieldset>
+    </section>
+
+    <section class="sec">
+      <div class="sec__head">
+        <p class="eyebrow">CHOOSE THE EVENING, NOT THE RULEBOOK</p>
+        <h2><span class="step">03</span><span>What You're After</span></h2>
+      </div>
+      <p class="lede">Placeholder &mdash; the &ldquo;if you loved <em>Bridgerton</em>&rdquo; style pickers go here.</p>
+
+      <div class="field">
+        <label for="after">THE FEELING YOU'RE AFTER</label>
+        <textarea id="after" name="after"></textarea>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="sec__head">
+        <p class="eyebrow">FIND A TABLE</p>
+        <h2><span class="step">04</span><span>When &amp; Where</span></h2>
+      </div>
+      <p class="lede">Placeholder &mdash; availability, in-person vs. online, group size.</p>
+
+      <div class="field">
+        <label for="when">WHEN YOU'RE FREE</label>
+        <textarea id="when" name="when"></textarea>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="sec__head">
+        <p class="eyebrow">HOW MY TABLE WORKS</p>
+        <h2><span class="step">05</span><span>Lines, Veils &amp; Anything Else</span></h2>
+      </div>
+      <p class="lede">Placeholder &mdash; safety tools, boundaries, accessibility needs.</p>
+
+      <div class="field">
+        <label for="notes">ANYTHING I SHOULD KNOW</label>
+        <textarea id="notes" name="notes"></textarea>
+      </div>
+    </section>
+
+    <div class="submit-bar">
+      <button type="submit">SEND IT IN</button>
+      <p class="consent">Placeholder &mdash; consent / what-happens-next line goes here.</p>
+      <p class="consent" id="status" role="status" aria-live="polite"></p>
+    </div>
+  </form>
+
+  <footer class="foot">
+    <img class="tile" src="assets/tiles/s.svg" alt="">
+    <p class="foot__who">JORDAN PEACOCK &amp; COLLABORATORS &middot; WINNIPEG</p>
+    <p class="foot__meta">Sortilege &copy; 2026 &middot; <a href="https://sortilege.online">sortilege.online</a> &middot; <a href="mailto:jordan@sortilege.online">jordan@sortilege.online</a></p>
+  </footer>
+
+</main>
+<script src="app.js"></script>
+</body>
+</html>
