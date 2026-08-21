@@ -36,3 +36,24 @@ Cloudflare and reads it from a prompt, so it is not in your shell history either
 - A hidden `website` field is a honeypot. If it is filled the Worker returns
   200 and sends nothing, so bots cannot tell they were caught.
 - Mailgun errors are logged (`wrangler tail`) but never returned to the browser.
+
+## Troubleshooting: `wrangler login` fails with "fetch failed"
+
+Not a Cloudflare problem. This machine has a global-scope IPv6 address on
+`tailscale0` but **no IPv6 default route**. Node's Happy Eyeballs
+(`autoSelectFamily`, default-on since Node 20) therefore races IPv6
+connections that black-hole, and every `fetch` ends in `ETIMEDOUT` — which
+wrangler reports as a bare `fetch failed`. It affects all hosts, not just
+Cloudflare; `curl` is unaffected because it has its own implementation.
+
+Prefix any wrangler command:
+
+```bash
+NODE_OPTIONS=--no-network-family-autoselection npx wrangler login
+```
+
+Verified: without the flag `fetch` to the Cloudflare API fails `ETIMEDOUT`
+in ~1.5s; with it, `HTTP 400` (the expected "no token" reply) in ~1.1s.
+`--network-family-autoselection-attempt-timeout=2000` also works.
+
+This applies to every Node fetch-based tool on this machine.

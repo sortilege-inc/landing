@@ -1,10 +1,10 @@
 // Sortilege onboarding form — submission handling.
 //
 // Posts the whole form as JSON to the Cloudflare Worker in ./worker, which holds
-// the Mailgun key and does the actual send. Set ENDPOINT to the URL that
-// `wrangler deploy` prints. Until then, submitting logs the payload and says so.
+// the Mailgun key and does the actual send. If ENDPOINT is null the form logs the
+// payload instead of sending, which is the useful mode when editing locally.
 
-const ENDPOINT = null;
+const ENDPOINT = 'https://sortilege-onboarding.sortilege.workers.dev';
 
 const form = document.getElementById('onboard');
 const status = document.getElementById('status');
