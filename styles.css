@@ -251,3 +251,14 @@ a:hover { color: var(--coral); }
   .sec, .submit-bar, .foot { padding-left: 2.5rem; padding-right: 2.5rem; }
   .sec { padding-top: 2.5rem; padding-bottom: 2.75rem; }
 }
+
+/* Honeypot — off-canvas rather than display:none, which some bots skip. */
+.trap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.consent.is-error { color: var(--coral); }

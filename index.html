@@ -119,6 +119,15 @@
       </div>
     </section>
 
+    <!-- Honeypot: hidden from people, irresistible to bots. -->
+    <div class="trap" aria-hidden="true">
+      <label for="website">Website</label>
+      <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+    </div>
+
+    <!-- Which printed QR this scan came from; filled from ?src= by app.js. -->
+    <input type="hidden" name="src" value="">
+
     <div class="submit-bar">
       <button type="submit">SEND IT IN</button>
       <p class="consent">Placeholder &mdash; consent / what-happens-next line goes here.</p>

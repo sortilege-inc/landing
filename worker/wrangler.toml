@@ -1,0 +1,22 @@
+name = "sortilege-onboarding"
+main = "src/index.js"
+compatibility_date = "2026-08-19"
+
+[vars]
+# Mailgun region: "us" -> api.mailgun.net, "eu" -> api.eu.mailgun.net
+MG_REGION = "us"
+
+# The verified sending domain in your Mailgun account (e.g. mg.sortilege.online).
+MG_DOMAIN = "mg.sortilege.online"
+
+# Where submissions land.
+MG_TO = "jordan@sortilege.online"
+
+# Comma-separated origins allowed to POST here. The first is used as the
+# fallback CORS origin. Keep localhost for testing; drop it before going live
+# if you would rather not accept submissions from a local page.
+ALLOWED_ORIGIN = "https://sortilege-inc.github.io,http://localhost:4317"
+
+# MAILGUN_API_KEY is a SECRET and is deliberately absent from this file.
+# Set it yourself, from your own shell:
+#   npx wrangler secret put MAILGUN_API_KEY
