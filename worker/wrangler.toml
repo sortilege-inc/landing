@@ -13,9 +13,11 @@ MG_DOMAIN = "mg.sortilege.online"
 MG_TO = "jordan@sortilege.online"
 
 # Comma-separated origins allowed to POST here. The first is used as the
-# fallback CORS origin. Keep localhost for testing; drop it before going live
-# if you would rather not accept submissions from a local page.
-ALLOWED_ORIGIN = "https://sortilege-inc.github.io,http://localhost:4317"
+# fallback CORS origin. The site is served from landing.sortilege.online
+# (GitHub Pages custom domain, set by the CNAME file in the repo root), so
+# that is the origin browsers will send. Keep localhost for testing; drop it
+# before going live if you would rather not accept local submissions.
+ALLOWED_ORIGIN = "https://landing.sortilege.online,http://localhost:4317"
 
 # MAILGUN_API_KEY is a SECRET and is deliberately absent from this file.
 # Set it yourself, from your own shell:
