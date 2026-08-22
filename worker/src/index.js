@@ -35,9 +35,12 @@ const LABELS = {
   'location-other': 'Where (write-in)',
   company: 'Who with',
   'cost-assistance': 'Cost assistance',
-  wants: 'What they want to play',
+  systems: 'Systems',
+  vibes: 'Vibe & genre',
   lines: 'LINES — not at all',
   veils: 'VEILS — not prominently',
+  'boundaries-notes': 'Boundary notes',
+  'company-other': 'Other preferences (write-in)',
   newsletter: 'Newsletter',
   src: 'Scanned from',
 };
@@ -48,8 +51,8 @@ const ORDER = [
   'contact-methods', 'contact-preferred', 'email', 'mobile', 'discord',
   'experience', 'experience-notes',
   'avail-mon', 'avail-tue', 'avail-wed', 'avail-thu', 'avail-fri', 'avail-sat', 'avail-sun',
-  'frequency', 'duration', 'location', 'location-other', 'company',
-  'wants', 'lines', 'veils',
+  'frequency', 'duration', 'location', 'location-other', 'company', 'company-other',
+  'systems', 'vibes', 'lines', 'veils', 'boundaries-notes',
   'cost-assistance', 'newsletter', 'src',
 ];
 

@@ -53,6 +53,138 @@ if (window.DISCORD_INVITE) {
   discord.hidden = true;
 }
 
+/* ---------- Tag pickers ---------- */
+// Type to filter a seed list, click or Enter to add, and anything typed that is
+// not on the list is accepted as-is. Each chosen tag gets its own hidden input
+// under the same name, so FormData.getAll picks the whole set up as an array.
+
+function createTagSelect(root) {
+  const name = root.dataset.name;
+  const options = window[root.dataset.source] || [];
+  const chosen = [];
+
+  root.innerHTML = `
+    <div class="tagselect__box">
+      <span class="tagselect__tags"></span>
+      <input type="text" class="tagselect__input" role="combobox"
+             aria-expanded="false" aria-autocomplete="list" autocomplete="off">
+    </div>
+    <ul class="tagselect__menu" role="listbox" hidden></ul>
+    <span class="tagselect__values"></span>`;
+
+  const tags = root.querySelector('.tagselect__tags');
+  const input = root.querySelector('.tagselect__input');
+  const menu = root.querySelector('.tagselect__menu');
+  const values = root.querySelector('.tagselect__values');
+  input.placeholder = root.dataset.placeholder || '';
+  const labelledBy = root.getAttribute('aria-labelledby');
+  if (labelledBy) input.setAttribute('aria-labelledby', labelledBy);
+
+  let active = -1;
+
+  function render() {
+    tags.textContent = '';
+    values.textContent = '';
+    for (const value of chosen) {
+      const tag = document.createElement('span');
+      tag.className = 'tag';
+      const text = document.createElement('span');
+      text.textContent = value;
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'tag__x';
+      remove.setAttribute('aria-label', `Remove ${value}`);
+      remove.textContent = '×';
+      remove.addEventListener('click', () => { drop(value); input.focus(); });
+      tag.append(text, remove);
+      tags.append(tag);
+
+      const hidden = document.createElement('input');
+      hidden.type = 'hidden';
+      hidden.name = name;
+      hidden.value = value;
+      values.append(hidden);
+    }
+  }
+
+  function add(value) {
+    const clean = value.trim().slice(0, 80);
+    if (!clean) return;
+    if (!chosen.some((c) => c.toLowerCase() === clean.toLowerCase())) chosen.push(clean);
+    input.value = '';
+    closeMenu();
+    render();
+  }
+
+  function drop(value) {
+    const i = chosen.indexOf(value);
+    if (i > -1) chosen.splice(i, 1);
+    render();
+  }
+
+  function matches() {
+    const q = input.value.trim().toLowerCase();
+    return options
+      .filter((o) => !chosen.some((c) => c.toLowerCase() === o.toLowerCase()))
+      .filter((o) => !q || o.toLowerCase().includes(q))
+      .slice(0, 8);
+  }
+
+  function openMenu() {
+    const list = matches();
+    menu.textContent = '';
+    active = -1;
+    if (!list.length) return closeMenu();
+    list.forEach((value) => {
+      const li = document.createElement('li');
+      li.role = 'option';
+      li.className = 'tagselect__option';
+      li.textContent = value;
+      // mousedown, not click: blur would close the menu first.
+      li.addEventListener('mousedown', (e) => { e.preventDefault(); add(value); });
+      menu.append(li);
+    });
+    menu.hidden = false;
+    input.setAttribute('aria-expanded', 'true');
+  }
+
+  function closeMenu() {
+    menu.hidden = true;
+    active = -1;
+    input.setAttribute('aria-expanded', 'false');
+    [...menu.children].forEach((li) => li.classList.remove('is-active'));
+  }
+
+  function move(step) {
+    const items = [...menu.children];
+    if (!items.length) return;
+    items.forEach((li) => li.classList.remove('is-active'));
+    active = (active + step + items.length) % items.length;
+    items[active].classList.add('is-active');
+    items[active].scrollIntoView({ block: 'nearest' });
+  }
+
+  input.addEventListener('input', openMenu);
+  input.addEventListener('focus', openMenu);
+  input.addEventListener('blur', () => setTimeout(closeMenu, 120));
+
+  input.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowDown') { event.preventDefault(); menu.hidden ? openMenu() : move(1); }
+    else if (event.key === 'ArrowUp') { event.preventDefault(); move(-1); }
+    else if (event.key === 'Enter') {
+      event.preventDefault(); // never submit the form from this field
+      const items = [...menu.children];
+      add(active > -1 && items[active] ? items[active].textContent : input.value);
+    } else if (event.key === 'Escape') { closeMenu(); }
+    else if (event.key === 'Backspace' && !input.value && chosen.length) { drop(chosen[chosen.length - 1]); }
+  });
+
+  root.querySelector('.tagselect__box').addEventListener('click', () => input.focus());
+  render();
+}
+
+document.querySelectorAll('.tagselect').forEach(createTagSelect);
+
 /* ---------- Experience slider ---------- */
 
 const slider = document.getElementById('experience');

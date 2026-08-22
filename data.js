@@ -1,4 +1,4 @@
-// Currently open games, rendered into the "Currently Open" section by app.js.
+// Page data: open games, and the seed lists behind the type-to-filter pickers.
 //
 // Edit this file when the roster changes — it is the only place game details live.
 // Details below were taken from the StartPlaying listings on 2026-08-21; schedules
@@ -35,16 +35,80 @@ window.OPEN_GAMES = [
     pitch: 'After falling down a strange well, players explore a surreal dungeon in search of escape and redemption.',
     url: 'https://startplaying.games/adventure/cmsuncli60006l404ybpsvxxn',
   },
-  {
-    title: 'Portents & Fortunes',
-    system: 'Legend of the Five Rings 5th Edition',
-    price: 'Free',
-    length: '1 hour',
-    schedule: 'Weekly, Saturdays',
-    format: 'Online (Discord)',
-    pitch: "A child's prophecy once protected Rokugan from the Kami's wrath, but now ancient forces stir again in this roleplay-heavy campaign set in the Dragon Clan's northern territories.",
-    url: 'https://startplaying.games/adventure/cmsjj69jp005xji04q592n9ur',
-  },
 ];
 
 window.DISCORD_INVITE = 'https://discord.gg/KNcPMrQuSW';
+
+// Systems Jordan has run. Seeded from the Gamemastering Pamphlet and the converted
+// rules corpora — EDIT FREELY, this is just the starting list people can pick from.
+// The pickers also accept anything typed in, so nothing here is a limit.
+window.SYSTEMS = [
+  'Ars Magica 5th Edition',
+  'Call of Cthulhu',
+  'City of Winter',
+  'Daggerheart',
+  'Dungeons & Dragons 5e',
+  'Dune: Adventures in the Imperium',
+  'Eclipse Phase',
+  'Good Society',
+  'Invisible Sun',
+  'Legend of the Five Rings',
+  'Monsterhearts',
+  'Mouse Guard',
+  'Mörk Borg',
+  'Root',
+  'The Expanse',
+  'The One Ring',
+  'Troika!',
+  'Vampire: The Masquerade',
+  'Werewolf: The Apocalypse',
+];
+
+window.VIBES = [
+  'Political intrigue',
+  'Courtly romance',
+  'Cosmic horror',
+  'Gothic horror',
+  'Folk horror',
+  'Dark fantasy',
+  'Heroic fantasy',
+  'Cyberpunk',
+  'Space opera',
+  'Mystery & investigation',
+  'Heist',
+  'Exploration & travel',
+  'Survival',
+  'Comedy',
+  'Tragedy',
+  'Historical',
+  'Post-apocalyptic',
+  'Wuxia & samurai',
+  'Slice of life',
+  'Pulp adventure',
+];
+
+// Offered as suggestions under both lines and veils. Anything typed in is accepted.
+window.CONTENT_TAGS = [
+  'Sexual violence',
+  'Harm to children',
+  'Animal cruelty',
+  'Torture',
+  'Gore',
+  'Body horror',
+  'Self-harm',
+  'Suicide',
+  'Addiction',
+  'Eating disorders',
+  'Slavery',
+  'Incest',
+  'Racism',
+  'Homophobia',
+  'Transphobia',
+  'Religious trauma',
+  'Spiders & insects',
+  'Claustrophobia',
+  'Drowning',
+  'Needles',
+  'Pregnancy loss',
+  'Domestic abuse',
+];

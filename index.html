@@ -28,8 +28,7 @@
 
     <section class="sec">
       <div class="sec__head">
-        <p class="eyebrow">WHO I'M TALKING TO</p>
-        <h2><span class="step">01</span><span>Who Are You?</span></h2>
+        <h2>You Are</h2>
       </div>
       <p class="lede">Nothing here is published anywhere. It comes to me by email.</p>
 
@@ -38,40 +37,28 @@
         <input type="text" id="name" name="name" autocomplete="name">
       </div>
 
-      <div class="field">
-        <span class="field__label" id="pronouns-label">PRONOUNS <em>(optional)</em></span>
-        <div class="chips" role="group" aria-labelledby="pronouns-label">
-          <label class="chip"><input type="checkbox" name="pronouns" value="she/her"><span>she/her</span></label>
-          <label class="chip"><input type="checkbox" name="pronouns" value="he/him"><span>he/him</span></label>
-          <label class="chip"><input type="checkbox" name="pronouns" value="they/them"><span>they/them</span></label>
-          <label class="chip"><input type="checkbox" name="pronouns" value="any"><span>any</span></label>
-          <label class="chip"><input type="checkbox" name="pronouns" value="ask me"><span>ask me</span></label>
+      <details class="more">
+        <summary>More about you<span class="optional">OPTIONAL</span></summary>
+        <div class="more__body">
+          <div class="field">
+            <label for="pronouns">PRONOUNS</label>
+            <input type="text" id="pronouns" name="pronouns">
+          </div>
+          <div class="field">
+            <label for="generation">AGE GROUP</label>
+            <input type="text" id="generation" name="generation">
+          </div>
+          <div class="field">
+            <label for="about">ANYTHING ELSE</label>
+            <input type="text" id="about" name="about">
+          </div>
         </div>
-        <input type="text" name="pronouns-other" placeholder="or write in" class="write-in" aria-label="Pronouns, write in">
-      </div>
-
-      <div class="field">
-        <span class="field__label" id="generation-label">ROUGHLY MY AGE GROUP <em>(optional)</em></span>
-        <p class="hint">Only used so nobody ends up the odd one out at a table.</p>
-        <div class="chips" role="group" aria-labelledby="generation-label">
-          <label class="chip"><input type="radio" name="generation" value="Gen Z"><span>Gen Z</span></label>
-          <label class="chip"><input type="radio" name="generation" value="Millennial"><span>Millennial</span></label>
-          <label class="chip"><input type="radio" name="generation" value="Gen X"><span>Gen X</span></label>
-          <label class="chip"><input type="radio" name="generation" value="Boomer"><span>Boomer</span></label>
-          <label class="chip"><input type="radio" name="generation" value="Rather not say"><span>Rather not say</span></label>
-        </div>
-      </div>
-
-      <div class="field">
-        <label for="about">ANYTHING ELSE ABOUT YOU <em>(optional)</em></label>
-        <input type="text" id="about" name="about" placeholder="write in">
-      </div>
+      </details>
     </section>
 
     <section class="sec">
       <div class="sec__head">
-        <p class="eyebrow">BEFORE YOU SIT DOWN</p>
-        <h2><span class="step">02</span><span>You Do Not Need To Know Anything</span></h2>
+        <h2>What Have You Already Tried?</h2>
       </div>
       <p class="lede">Drag to wherever you actually are. There is no wrong answer &mdash; I assume zero knowledge going in.</p>
 
@@ -88,31 +75,30 @@
       </div>
 
       <div class="field">
-        <label for="experience-notes">ANYTHING TO ADD <em>(optional)</em></label>
+        <label for="experience-notes">ANYTHING TO ADD<span class="optional">OPTIONAL</span></label>
         <textarea id="experience-notes" name="experience-notes"></textarea>
       </div>
     </section>
 
     <section class="sec">
       <div class="sec__head">
-        <p class="eyebrow">FIND A TABLE</p>
-        <h2><span class="step">03</span><span>How Should I Reach You?</span></h2>
+        <h2>How Would You Like To Be Contacted?</h2>
       </div>
       <p class="lede">Pick at least one, and mark which you'd rather I use.</p>
 
       <div class="contacts" role="group" aria-label="Contact methods">
         <div class="contact">
-          <label class="contact__pick"><input type="checkbox" name="contact-methods" value="Email" data-contact="email"><span>EMAIL</span></label>
+          <label class="contact__pick"><input type="checkbox" name="contact-methods" value="Email"><span>EMAIL</span></label>
           <input type="email" id="email" name="email" autocomplete="email" inputmode="email" placeholder="you@example.com" disabled>
           <label class="contact__pref"><input type="radio" name="contact-preferred" value="Email" disabled><span>Preferred</span></label>
         </div>
         <div class="contact">
-          <label class="contact__pick"><input type="checkbox" name="contact-methods" value="Mobile" data-contact="mobile"><span>MOBILE (TEXT)</span></label>
+          <label class="contact__pick"><input type="checkbox" name="contact-methods" value="Mobile"><span>MOBILE (TEXT)</span></label>
           <input type="tel" id="mobile" name="mobile" autocomplete="tel" inputmode="tel" placeholder="(204) 555-0134" disabled>
           <label class="contact__pref"><input type="radio" name="contact-preferred" value="Mobile" disabled><span>Preferred</span></label>
         </div>
         <div class="contact">
-          <label class="contact__pick"><input type="checkbox" name="contact-methods" value="Discord" data-contact="discord"><span>DISCORD</span></label>
+          <label class="contact__pick"><input type="checkbox" name="contact-methods" value="Discord"><span>DISCORD</span></label>
           <input type="text" id="discord" name="discord" placeholder="username" disabled>
           <label class="contact__pref"><input type="radio" name="contact-preferred" value="Discord" disabled><span>Preferred</span></label>
         </div>
@@ -122,8 +108,7 @@
 
     <section class="sec">
       <div class="sec__head">
-        <p class="eyebrow">CHOOSE THE EVENING</p>
-        <h2><span class="step">04</span><span>When Is Generally Best?</span></h2>
+        <h2>When Is Generally Best?<span class="optional">OPTIONAL</span></h2>
       </div>
       <p class="lede">Tap anything that could work. Rough is fine &mdash; we'll settle details later.</p>
 
@@ -223,13 +208,11 @@
 
     <section class="sec">
       <div class="sec__head">
-        <p class="eyebrow">IN PERSON OR OTHERWISE</p>
-        <h2><span class="step">05</span><span>Where Works?</span></h2>
+        <h2>Where Is Best?<span class="optional">OPTIONAL</span></h2>
       </div>
 
       <div class="field">
-        <span class="field__label" id="location-label">PICK ANY THAT SUIT</span>
-        <div class="chips" role="group" aria-labelledby="location-label">
+        <div class="chips" role="group" aria-label="Where works">
           <label class="chip"><input type="checkbox" name="location" value="Exchange District"><span>Exchange District</span></label>
           <label class="chip"><input type="checkbox" name="location" value="St. Boniface"><span>St. Boniface</span></label>
           <label class="chip"><input type="checkbox" name="location" value="Wolseley"><span>Wolseley</span></label>
@@ -243,26 +226,25 @@
 
     <section class="sec">
       <div class="sec__head">
-        <p class="eyebrow">HOW MY TABLE WORKS</p>
-        <h2><span class="step">06</span><span>Who Do You Want To Play With?</span></h2>
+        <h2>Other Preferences?<span class="optional">OPTIONAL</span></h2>
       </div>
-      <p class="lede">Everyone should feel safe, welcome, and genuinely wanted in the story.</p>
 
       <div class="field">
-        <div class="chips chips--stack" role="group" aria-label="Who you want to play with">
+        <div class="chips chips--stack" role="group" aria-label="Other preferences">
           <label class="chip"><input type="checkbox" name="company" value="Anyone"><span>Anyone</span></label>
           <label class="chip"><input type="checkbox" name="company" value="People I know"><span>People I know</span></label>
           <label class="chip"><input type="checkbox" name="company" value="I don't want to be the only person of my gender"><span>I don't want to be the only person of my gender</span></label>
           <label class="chip"><input type="checkbox" name="company" value="I don't want to be the only person my age"><span>I don't want to be the only person my age</span></label>
         </div>
+        <input type="text" name="company-other" placeholder="anything else?" class="write-in" aria-label="Other preferences, write in">
       </div>
     </section>
 
     <section class="sec">
       <div class="sec__head">
-        <p class="eyebrow">NO ONE IS PRICED OUT</p>
-        <h2><span class="step">07</span><span>Cost Assistance</span></h2>
+        <h2>Cost<span class="optional">OPTIONAL</span></h2>
       </div>
+      <p class="lede">Standard cost is $35 CAD (in-person Winnipeg) or USD (online) per person, per session. Specific events may be more or less expensive.</p>
 
       <label class="switch">
         <input type="checkbox" name="cost-assistance" value="Yes — send details">
@@ -273,39 +255,48 @@
 
     <section class="sec">
       <div class="sec__head">
-        <p class="eyebrow">CHOOSE THE EVENING, NOT THE RULEBOOK</p>
-        <h2><span class="step">08</span><span>What Do You Want To Play?</span></h2>
+        <h2>What Excites You?<span class="optional">OPTIONAL</span></h2>
       </div>
-      <p class="lede">A genre, a vibe, a film you loved, or a specific system. &ldquo;Something like <em>Andor</em>&rdquo; is a perfectly good answer.</p>
+      <p class="lede">Type to search, or write in anything that isn't listed. Pick as many as you like.</p>
 
       <div class="field">
-        <label for="wants">WHAT YOU'RE AFTER</label>
-        <textarea id="wants" name="wants"></textarea>
+        <span class="field__label" id="systems-label">SYSTEMS</span>
+        <div class="tagselect" data-name="systems" data-source="SYSTEMS"
+             data-placeholder="Search systems, or write in…" aria-labelledby="systems-label"></div>
+      </div>
+      <div class="field">
+        <span class="field__label" id="vibes-label">VIBE &amp; GENRE</span>
+        <div class="tagselect" data-name="vibes" data-source="VIBES"
+             data-placeholder="Search genres, or write in…" aria-labelledby="vibes-label"></div>
       </div>
     </section>
 
     <section class="sec">
       <div class="sec__head">
-        <p class="eyebrow">YOUR BOUNDARIES, RESPECTED</p>
-        <h2><span class="step">09</span><span>Lines &amp; Veils</span></h2>
+        <h2>Boundaries To Note<span class="optional">OPTIONAL</span></h2>
       </div>
-      <p class="lede">Both optional, and you can always raise more at the table. Consent is ongoing, not a form you sign once.</p>
+      <p class="lede">Type anything you want kept off the table. You can always raise more later &mdash; consent is ongoing, not a form you sign once.</p>
 
       <div class="field">
-        <label for="lines">I DON'T WANT GAMES THAT FEATURE&hellip; <em>at all</em></label>
-        <textarea id="lines" name="lines"></textarea>
+        <span class="field__label" id="lines-label">NOT AT ALL</span>
+        <div class="tagselect" data-name="lines" data-source="CONTENT_TAGS"
+             data-placeholder="Type and press Enter…" aria-labelledby="lines-label"></div>
+      </div>
+      <div class="field">
+        <span class="field__label" id="veils-label">NOT PROMINENTLY</span>
+        <div class="tagselect" data-name="veils" data-source="CONTENT_TAGS"
+             data-placeholder="Type and press Enter…" aria-labelledby="veils-label"></div>
       </div>
 
       <div class="field">
-        <label for="veils">I DON'T WANT GAMES THAT FEATURE&hellip; <em>prominently</em></label>
-        <textarea id="veils" name="veils"></textarea>
+        <label for="boundaries-notes">ANYTHING TO EXPLAIN<span class="optional">OPTIONAL</span></label>
+        <textarea id="boundaries-notes" name="boundaries-notes"></textarea>
       </div>
     </section>
 
     <section class="sec sec--games">
       <div class="sec__head">
-        <p class="eyebrow">SEATS AVAILABLE NOW</p>
-        <h2><span>Currently Open</span></h2>
+        <h2>Open Games</h2>
       </div>
       <p class="lede">You don't have to pick one of these &mdash; the form above works fine on its own. But if something here already fits, say so.</p>
       <div class="cards" id="open-games"></div>
@@ -313,8 +304,7 @@
 
     <section class="sec">
       <div class="sec__head">
-        <p class="eyebrow">WHERE TABLES GET ANNOUNCED</p>
-        <h2><span>Stay In Touch</span></h2>
+        <h2>Stay In Touch</h2>
       </div>
 
       <a class="discord" id="discord-link" href="#" rel="noopener">JOIN THE SORTILEGE DISCORD</a>
@@ -350,7 +340,7 @@
   </footer>
 
 </main>
-<script src="games.js"></script>
+<script src="data.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
