@@ -7,7 +7,7 @@
 <meta name="description" content="Tell Jordan what kind of game you're after, and get matched to a Sortilege table.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&amp;family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&amp;family=Bebas+Neue&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -26,23 +26,45 @@
 
   <form class="form" id="onboard" novalidate>
 
-    <!-- STUB: section list and every field below is a placeholder, pending the content pass. -->
-
     <section class="sec">
       <div class="sec__head">
         <p class="eyebrow">WHO I'M TALKING TO</p>
-        <h2><span class="step">01</span><span>Your Name</span></h2>
+        <h2><span class="step">01</span><span>Who Are You?</span></h2>
       </div>
       <p class="lede">Nothing here is published anywhere. It comes to me by email.</p>
 
       <div class="field">
-        <label for="name">NAME</label>
+        <label for="name">PREFERRED NAME</label>
         <input type="text" id="name" name="name" autocomplete="name">
       </div>
 
       <div class="field">
-        <label for="email">EMAIL</label>
-        <input type="email" id="email" name="email" autocomplete="email" inputmode="email">
+        <span class="field__label" id="pronouns-label">PRONOUNS <em>(optional)</em></span>
+        <div class="chips" role="group" aria-labelledby="pronouns-label">
+          <label class="chip"><input type="checkbox" name="pronouns" value="she/her"><span>she/her</span></label>
+          <label class="chip"><input type="checkbox" name="pronouns" value="he/him"><span>he/him</span></label>
+          <label class="chip"><input type="checkbox" name="pronouns" value="they/them"><span>they/them</span></label>
+          <label class="chip"><input type="checkbox" name="pronouns" value="any"><span>any</span></label>
+          <label class="chip"><input type="checkbox" name="pronouns" value="ask me"><span>ask me</span></label>
+        </div>
+        <input type="text" name="pronouns-other" placeholder="or write in" class="write-in" aria-label="Pronouns, write in">
+      </div>
+
+      <div class="field">
+        <span class="field__label" id="generation-label">ROUGHLY MY AGE GROUP <em>(optional)</em></span>
+        <p class="hint">Only used so nobody ends up the odd one out at a table.</p>
+        <div class="chips" role="group" aria-labelledby="generation-label">
+          <label class="chip"><input type="radio" name="generation" value="Gen Z"><span>Gen Z</span></label>
+          <label class="chip"><input type="radio" name="generation" value="Millennial"><span>Millennial</span></label>
+          <label class="chip"><input type="radio" name="generation" value="Gen X"><span>Gen X</span></label>
+          <label class="chip"><input type="radio" name="generation" value="Boomer"><span>Boomer</span></label>
+          <label class="chip"><input type="radio" name="generation" value="Rather not say"><span>Rather not say</span></label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="about">ANYTHING ELSE ABOUT YOU <em>(optional)</em></label>
+        <input type="text" id="about" name="about" placeholder="write in">
       </div>
     </section>
 
@@ -51,72 +73,258 @@
         <p class="eyebrow">BEFORE YOU SIT DOWN</p>
         <h2><span class="step">02</span><span>You Do Not Need To Know Anything</span></h2>
       </div>
-
-      <fieldset class="bare">
-        <legend class="lede">Where are you starting from?</legend>
-        <div class="choices">
-          <label class="choice">
-            <input type="radio" name="experience" value="none">
-            <span>
-              <span class="choice__title">NEVER PLAYED ANYTHING</span>
-              <span class="choice__note">Welcome. I assume zero knowledge, and I like teaching best of all.</span>
-            </span>
-          </label>
-          <label class="choice">
-            <input type="radio" name="experience" value="dnd-only">
-            <span>
-              <span class="choice__title">ONLY PLAYED D&amp;D</span>
-              <span class="choice__note">There are hundreds of other games, and most want something different from you than a fight.</span>
-            </span>
-          </label>
-          <label class="choice">
-            <input type="radio" name="experience" value="knows">
-            <span>
-              <span class="choice__title">I KNOW EXACTLY WHAT I WANT</span>
-              <span class="choice__note">Name it. Twenty-odd systems in rotation, and I'll learn a new one for the right table.</span>
-            </span>
-          </label>
-        </div>
-      </fieldset>
-    </section>
-
-    <section class="sec">
-      <div class="sec__head">
-        <p class="eyebrow">CHOOSE THE EVENING, NOT THE RULEBOOK</p>
-        <h2><span class="step">03</span><span>What You're After</span></h2>
-      </div>
-      <p class="lede">Placeholder &mdash; the &ldquo;if you loved <em>Bridgerton</em>&rdquo; style pickers go here.</p>
+      <p class="lede">Drag to wherever you actually are. There is no wrong answer &mdash; I assume zero knowledge going in.</p>
 
       <div class="field">
-        <label for="after">THE FEELING YOU'RE AFTER</label>
-        <textarea id="after" name="after"></textarea>
+        <label for="experience">EXPERIENCE</label>
+        <input type="range" id="experience" name="experience" class="slider"
+               min="1" max="4" step="1" value="2" list="experience-notches"
+               aria-describedby="experience-text">
+        <datalist id="experience-notches">
+          <option value="1"></option><option value="2"></option>
+          <option value="3"></option><option value="4"></option>
+        </datalist>
+        <p class="slider__text" id="experience-text" role="status" aria-live="polite"></p>
+      </div>
+
+      <div class="field">
+        <label for="experience-notes">ANYTHING TO ADD <em>(optional)</em></label>
+        <textarea id="experience-notes" name="experience-notes"></textarea>
       </div>
     </section>
 
     <section class="sec">
       <div class="sec__head">
         <p class="eyebrow">FIND A TABLE</p>
-        <h2><span class="step">04</span><span>When &amp; Where</span></h2>
+        <h2><span class="step">03</span><span>How Should I Reach You?</span></h2>
       </div>
-      <p class="lede">Placeholder &mdash; availability, in-person vs. online, group size.</p>
+      <p class="lede">Pick at least one, and mark which you'd rather I use.</p>
+
+      <div class="contacts" role="group" aria-label="Contact methods">
+        <div class="contact">
+          <label class="contact__pick"><input type="checkbox" name="contact-methods" value="Email" data-contact="email"><span>EMAIL</span></label>
+          <input type="email" id="email" name="email" autocomplete="email" inputmode="email" placeholder="you@example.com" disabled>
+          <label class="contact__pref"><input type="radio" name="contact-preferred" value="Email" disabled><span>Preferred</span></label>
+        </div>
+        <div class="contact">
+          <label class="contact__pick"><input type="checkbox" name="contact-methods" value="Mobile" data-contact="mobile"><span>MOBILE (TEXT)</span></label>
+          <input type="tel" id="mobile" name="mobile" autocomplete="tel" inputmode="tel" placeholder="(204) 555-0134" disabled>
+          <label class="contact__pref"><input type="radio" name="contact-preferred" value="Mobile" disabled><span>Preferred</span></label>
+        </div>
+        <div class="contact">
+          <label class="contact__pick"><input type="checkbox" name="contact-methods" value="Discord" data-contact="discord"><span>DISCORD</span></label>
+          <input type="text" id="discord" name="discord" placeholder="username" disabled>
+          <label class="contact__pref"><input type="radio" name="contact-preferred" value="Discord" disabled><span>Preferred</span></label>
+        </div>
+      </div>
+      <p class="error" id="contact-error" role="alert" hidden></p>
+    </section>
+
+    <section class="sec">
+      <div class="sec__head">
+        <p class="eyebrow">CHOOSE THE EVENING</p>
+        <h2><span class="step">04</span><span>When Is Generally Best?</span></h2>
+      </div>
+      <p class="lede">Tap anything that could work. Rough is fine &mdash; we'll settle details later.</p>
 
       <div class="field">
-        <label for="when">WHEN YOU'RE FREE</label>
-        <textarea id="when" name="when"></textarea>
+        <span class="field__label">DAYS &amp; TIMES</span>
+        <div class="avail-scroll">
+          <div class="avail">
+            <div class="avail__head">
+              <span></span>
+          <span class="avail__slot">Morn</span>
+          <span class="avail__slot">Early PM</span>
+          <span class="avail__slot">Late PM</span>
+          <span class="avail__slot">Eve</span>
+          <span class="avail__slot">After Dark</span>
+            </div>
+        <div class="avail__day" role="group" aria-label="Monday">
+          <span class="avail__name">Mon</span>
+          <label class="avail__cell"><input type="checkbox" name="avail-mon" value="Mornings"><span aria-hidden="true"></span><span class="sr-only">Monday Mornings</span></label>
+          <label class="avail__cell"><input type="checkbox" name="avail-mon" value="Early Afternoons"><span aria-hidden="true"></span><span class="sr-only">Monday Early Afternoons</span></label>
+          <label class="avail__cell"><input type="checkbox" name="avail-mon" value="Late Afternoons"><span aria-hidden="true"></span><span class="sr-only">Monday Late Afternoons</span></label>
+          <label class="avail__cell"><input type="checkbox" name="avail-mon" value="Evenings"><span aria-hidden="true"></span><span class="sr-only">Monday Evenings</span></label>
+          <label class="avail__cell"><input type="checkbox" name="avail-mon" value="After Dark"><span aria-hidden="true"></span><span class="sr-only">Monday After Dark</span></label>
+        </div>
+        <div class="avail__day" role="group" aria-label="Tuesday">
+          <span class="avail__name">Tue</span>
+          <label class="avail__cell"><input type="checkbox" name="avail-tue" value="Mornings"><span aria-hidden="true"></span><span class="sr-only">Tuesday Mornings</span></label>
+          <label class="avail__cell"><input type="checkbox" name="avail-tue" value="Early Afternoons"><span aria-hidden="true"></span><span class="sr-only">Tuesday Early Afternoons</span></label>
+          <label class="avail__cell"><input type="checkbox" name="avail-tue" value="Late Afternoons"><span aria-hidden="true"></span><span class="sr-only">Tuesday Late Afternoons</span></label>
+          <label class="avail__cell"><input type="checkbox" name="avail-tue" value="Evenings"><span aria-hidden="true"></span><span class="sr-only">Tuesday Evenings</span></label>
+          <label class="avail__cell"><input type="checkbox" name="avail-tue" value="After Dark"><span aria-hidden="true"></span><span class="sr-only">Tuesday After Dark</span></label>
+        </div>
+        <div class="avail__day" role="group" aria-label="Wednesday">
+          <span class="avail__name">Wed</span>
+          <label class="avail__cell"><input type="checkbox" name="avail-wed" value="Mornings"><span aria-hidden="true"></span><span class="sr-only">Wednesday Mornings</span></label>
+          <label class="avail__cell"><input type="checkbox" name="avail-wed" value="Early Afternoons"><span aria-hidden="true"></span><span class="sr-only">Wednesday Early Afternoons</span></label>
+          <label class="avail__cell"><input type="checkbox" name="avail-wed" value="Late Afternoons"><span aria-hidden="true"></span><span class="sr-only">Wednesday Late Afternoons</span></label>
+          <label class="avail__cell"><input type="checkbox" name="avail-wed" value="Evenings"><span aria-hidden="true"></span><span class="sr-only">Wednesday Evenings</span></label>
+          <label class="avail__cell"><input type="checkbox" name="avail-wed" value="After Dark"><span aria-hidden="true"></span><span class="sr-only">Wednesday After Dark</span></label>
+        </div>
+        <div class="avail__day" role="group" aria-label="Thursday">
+          <span class="avail__name">Thu</span>
+          <label class="avail__cell"><input type="checkbox" name="avail-thu" value="Mornings"><span aria-hidden="true"></span><span class="sr-only">Thursday Mornings</span></label>
+          <label class="avail__cell"><input type="checkbox" name="avail-thu" value="Early Afternoons"><span aria-hidden="true"></span><span class="sr-only">Thursday Early Afternoons</span></label>
+          <label class="avail__cell"><input type="checkbox" name="avail-thu" value="Late Afternoons"><span aria-hidden="true"></span><span class="sr-only">Thursday Late Afternoons</span></label>
+          <label class="avail__cell"><input type="checkbox" name="avail-thu" value="Evenings"><span aria-hidden="true"></span><span class="sr-only">Thursday Evenings</span></label>
+          <label class="avail__cell"><input type="checkbox" name="avail-thu" value="After Dark"><span aria-hidden="true"></span><span class="sr-only">Thursday After Dark</span></label>
+        </div>
+        <div class="avail__day" role="group" aria-label="Friday">
+          <span class="avail__name">Fri</span>
+          <label class="avail__cell"><input type="checkbox" name="avail-fri" value="Mornings"><span aria-hidden="true"></span><span class="sr-only">Friday Mornings</span></label>
+          <label class="avail__cell"><input type="checkbox" name="avail-fri" value="Early Afternoons"><span aria-hidden="true"></span><span class="sr-only">Friday Early Afternoons</span></label>
+          <label class="avail__cell"><input type="checkbox" name="avail-fri" value="Late Afternoons"><span aria-hidden="true"></span><span class="sr-only">Friday Late Afternoons</span></label>
+          <label class="avail__cell"><input type="checkbox" name="avail-fri" value="Evenings"><span aria-hidden="true"></span><span class="sr-only">Friday Evenings</span></label>
+          <label class="avail__cell"><input type="checkbox" name="avail-fri" value="After Dark"><span aria-hidden="true"></span><span class="sr-only">Friday After Dark</span></label>
+        </div>
+        <div class="avail__day" role="group" aria-label="Saturday">
+          <span class="avail__name">Sat</span>
+          <label class="avail__cell"><input type="checkbox" name="avail-sat" value="Mornings"><span aria-hidden="true"></span><span class="sr-only">Saturday Mornings</span></label>
+          <label class="avail__cell"><input type="checkbox" name="avail-sat" value="Early Afternoons"><span aria-hidden="true"></span><span class="sr-only">Saturday Early Afternoons</span></label>
+          <label class="avail__cell"><input type="checkbox" name="avail-sat" value="Late Afternoons"><span aria-hidden="true"></span><span class="sr-only">Saturday Late Afternoons</span></label>
+          <label class="avail__cell"><input type="checkbox" name="avail-sat" value="Evenings"><span aria-hidden="true"></span><span class="sr-only">Saturday Evenings</span></label>
+          <label class="avail__cell"><input type="checkbox" name="avail-sat" value="After Dark"><span aria-hidden="true"></span><span class="sr-only">Saturday After Dark</span></label>
+        </div>
+        <div class="avail__day" role="group" aria-label="Sunday">
+          <span class="avail__name">Sun</span>
+          <label class="avail__cell"><input type="checkbox" name="avail-sun" value="Mornings"><span aria-hidden="true"></span><span class="sr-only">Sunday Mornings</span></label>
+          <label class="avail__cell"><input type="checkbox" name="avail-sun" value="Early Afternoons"><span aria-hidden="true"></span><span class="sr-only">Sunday Early Afternoons</span></label>
+          <label class="avail__cell"><input type="checkbox" name="avail-sun" value="Late Afternoons"><span aria-hidden="true"></span><span class="sr-only">Sunday Late Afternoons</span></label>
+          <label class="avail__cell"><input type="checkbox" name="avail-sun" value="Evenings"><span aria-hidden="true"></span><span class="sr-only">Sunday Evenings</span></label>
+          <label class="avail__cell"><input type="checkbox" name="avail-sun" value="After Dark"><span aria-hidden="true"></span><span class="sr-only">Sunday After Dark</span></label>
+        </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="field__label" id="frequency-label">HOW OFTEN</span>
+        <div class="chips" role="group" aria-labelledby="frequency-label">
+          <label class="chip"><input type="checkbox" name="frequency" value="Once"><span>Once</span></label>
+          <label class="chip"><input type="checkbox" name="frequency" value="Weekly"><span>Weekly</span></label>
+          <label class="chip"><input type="checkbox" name="frequency" value="Biweekly"><span>Biweekly</span></label>
+          <label class="chip"><input type="checkbox" name="frequency" value="Monthly"><span>Monthly</span></label>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="field__label" id="duration-label">HOW LONG</span>
+        <div class="chips" role="group" aria-labelledby="duration-label">
+          <label class="chip"><input type="checkbox" name="duration" value="Single sessions"><span>Single sessions</span></label>
+          <label class="chip"><input type="checkbox" name="duration" value="Short (3–8 sessions)"><span>Short (3–8 sessions)</span></label>
+          <label class="chip"><input type="checkbox" name="duration" value="Medium (9–20)"><span>Medium (9–20)</span></label>
+          <label class="chip"><input type="checkbox" name="duration" value="Long (20+)"><span>Long (20+)</span></label>
+          <label class="chip"><input type="checkbox" name="duration" value="Don't know yet"><span>Don't know yet</span></label>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="sec__head">
+        <p class="eyebrow">IN PERSON OR OTHERWISE</p>
+        <h2><span class="step">05</span><span>Where Works?</span></h2>
+      </div>
+
+      <div class="field">
+        <span class="field__label" id="location-label">PICK ANY THAT SUIT</span>
+        <div class="chips" role="group" aria-labelledby="location-label">
+          <label class="chip"><input type="checkbox" name="location" value="Exchange District"><span>Exchange District</span></label>
+          <label class="chip"><input type="checkbox" name="location" value="St. Boniface"><span>St. Boniface</span></label>
+          <label class="chip"><input type="checkbox" name="location" value="Wolseley"><span>Wolseley</span></label>
+          <label class="chip"><input type="checkbox" name="location" value="Elmwood"><span>Elmwood</span></label>
+          <label class="chip"><input type="checkbox" name="location" value="Polo Park"><span>Polo Park</span></label>
+          <label class="chip"><input type="checkbox" name="location" value="Online"><span>Online</span></label>
+        </div>
+        <input type="text" name="location-other" placeholder="somewhere else?" class="write-in" aria-label="Another location">
       </div>
     </section>
 
     <section class="sec">
       <div class="sec__head">
         <p class="eyebrow">HOW MY TABLE WORKS</p>
-        <h2><span class="step">05</span><span>Lines, Veils &amp; Anything Else</span></h2>
+        <h2><span class="step">06</span><span>Who Do You Want To Play With?</span></h2>
       </div>
-      <p class="lede">Placeholder &mdash; safety tools, boundaries, accessibility needs.</p>
+      <p class="lede">Everyone should feel safe, welcome, and genuinely wanted in the story.</p>
 
       <div class="field">
-        <label for="notes">ANYTHING I SHOULD KNOW</label>
-        <textarea id="notes" name="notes"></textarea>
+        <div class="chips chips--stack" role="group" aria-label="Who you want to play with">
+          <label class="chip"><input type="checkbox" name="company" value="Anyone"><span>Anyone</span></label>
+          <label class="chip"><input type="checkbox" name="company" value="People I know"><span>People I know</span></label>
+          <label class="chip"><input type="checkbox" name="company" value="I don't want to be the only person of my gender"><span>I don't want to be the only person of my gender</span></label>
+          <label class="chip"><input type="checkbox" name="company" value="I don't want to be the only person my age"><span>I don't want to be the only person my age</span></label>
+        </div>
       </div>
+    </section>
+
+    <section class="sec">
+      <div class="sec__head">
+        <p class="eyebrow">NO ONE IS PRICED OUT</p>
+        <h2><span class="step">07</span><span>Cost Assistance</span></h2>
+      </div>
+
+      <label class="switch">
+        <input type="checkbox" name="cost-assistance" value="Yes — send details">
+        <span class="switch__track" aria-hidden="true"></span>
+        <span class="switch__text">Tell me about cost-assistance options for booking.</span>
+      </label>
+    </section>
+
+    <section class="sec">
+      <div class="sec__head">
+        <p class="eyebrow">CHOOSE THE EVENING, NOT THE RULEBOOK</p>
+        <h2><span class="step">08</span><span>What Do You Want To Play?</span></h2>
+      </div>
+      <p class="lede">A genre, a vibe, a film you loved, or a specific system. &ldquo;Something like <em>Andor</em>&rdquo; is a perfectly good answer.</p>
+
+      <div class="field">
+        <label for="wants">WHAT YOU'RE AFTER</label>
+        <textarea id="wants" name="wants"></textarea>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="sec__head">
+        <p class="eyebrow">YOUR BOUNDARIES, RESPECTED</p>
+        <h2><span class="step">09</span><span>Lines &amp; Veils</span></h2>
+      </div>
+      <p class="lede">Both optional, and you can always raise more at the table. Consent is ongoing, not a form you sign once.</p>
+
+      <div class="field">
+        <label for="lines">I DON'T WANT GAMES THAT FEATURE&hellip; <em>at all</em></label>
+        <textarea id="lines" name="lines"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="veils">I DON'T WANT GAMES THAT FEATURE&hellip; <em>prominently</em></label>
+        <textarea id="veils" name="veils"></textarea>
+      </div>
+    </section>
+
+    <section class="sec sec--games">
+      <div class="sec__head">
+        <p class="eyebrow">SEATS AVAILABLE NOW</p>
+        <h2><span>Currently Open</span></h2>
+      </div>
+      <p class="lede">You don't have to pick one of these &mdash; the form above works fine on its own. But if something here already fits, say so.</p>
+      <div class="cards" id="open-games"></div>
+    </section>
+
+    <section class="sec">
+      <div class="sec__head">
+        <p class="eyebrow">WHERE TABLES GET ANNOUNCED</p>
+        <h2><span>Stay In Touch</span></h2>
+      </div>
+
+      <a class="discord" id="discord-link" href="#" rel="noopener">JOIN THE SORTILEGE DISCORD</a>
+      <p class="hint">Where tables are announced, filled, and played.</p>
+
+      <label class="switch">
+        <input type="checkbox" name="newsletter" value="Yes — sign me up">
+        <span class="switch__track" aria-hidden="true"></span>
+        <span class="switch__text">Add me to the email newsletter.</span>
+      </label>
     </section>
 
     <!-- Honeypot: hidden from people, irresistible to bots. -->
@@ -130,7 +338,7 @@
 
     <div class="submit-bar">
       <button type="submit">SEND IT IN</button>
-      <p class="consent">Placeholder &mdash; consent / what-happens-next line goes here.</p>
+      <p class="consent">I'll read this myself and reply to arrange a seat. Your answers go to me by email and nowhere else.</p>
       <p class="consent" id="status" role="status" aria-live="polite"></p>
     </div>
   </form>
@@ -142,6 +350,7 @@
   </footer>
 
 </main>
+<script src="games.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

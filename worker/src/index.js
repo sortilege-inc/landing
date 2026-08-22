@@ -4,30 +4,59 @@
 // it takes the form POST, renders it as an email, and calls Mailgun with the key
 // stored as a Worker secret (never in this repo).
 //
-// Field names are NOT hardcoded. The form's content is still being decided, so
-// the body is rendered generically from whatever keys arrive — adding or renaming
-// a form field needs no change here.
+// Unknown field names are rendered generically, so adding a question to the form
+// needs no change here. LABELS and ORDER only control presentation of known ones.
 
 const MAILGUN_HOST = { us: 'api.mailgun.net', eu: 'api.eu.mailgun.net' };
 
-/** Fields that are handled specially rather than dumped into the body. */
-const NAME_KEYS = ['name', 'your-name', 'fullname'];
-const EMAIL_KEYS = ['email', 'your-email'];
+const NAME_KEYS = ['name'];
+const EMAIL_KEYS = ['email'];
+const CONTACT_KEYS = ['email', 'mobile', 'discord'];
 const HONEYPOT = 'website'; // real people never see this input; bots fill it in
 
 const LABELS = {
   name: 'Name',
-  email: 'Email',
+  pronouns: 'Pronouns',
+  'pronouns-other': 'Pronouns (write-in)',
+  generation: 'Age group',
+  about: 'About them',
   experience: 'Experience',
-  after: "The feeling they're after",
-  when: "When they're free",
-  notes: 'Anything I should know',
+  'experience-notes': 'Experience notes',
+  'contact-methods': 'Contact via',
+  'contact-preferred': 'Prefers',
+  email: 'Email',
+  mobile: 'Mobile',
+  discord: 'Discord',
+  'avail-mon': 'Mon', 'avail-tue': 'Tue', 'avail-wed': 'Wed', 'avail-thu': 'Thu',
+  'avail-fri': 'Fri', 'avail-sat': 'Sat', 'avail-sun': 'Sun',
+  frequency: 'How often',
+  duration: 'How long',
+  location: 'Where',
+  'location-other': 'Where (write-in)',
+  company: 'Who with',
+  'cost-assistance': 'Cost assistance',
+  wants: 'What they want to play',
+  lines: 'LINES — not at all',
+  veils: 'VEILS — not prominently',
+  newsletter: 'Newsletter',
   src: 'Scanned from',
 };
 
+/** Presentation order; anything not listed is appended in arrival order. */
+const ORDER = [
+  'name', 'pronouns', 'pronouns-other', 'generation', 'about',
+  'contact-methods', 'contact-preferred', 'email', 'mobile', 'discord',
+  'experience', 'experience-notes',
+  'avail-mon', 'avail-tue', 'avail-wed', 'avail-thu', 'avail-fri', 'avail-sat', 'avail-sun',
+  'frequency', 'duration', 'location', 'location-other', 'company',
+  'wants', 'lines', 'veils',
+  'cost-assistance', 'newsletter', 'src',
+];
+
 function pick(data, keys) {
   for (const k of keys) {
-    if (typeof data[k] === 'string' && data[k].trim()) return data[k].trim();
+    const v = data[k];
+    if (typeof v === 'string' && v.trim()) return v.trim();
   }
   return '';
 }
@@ -36,11 +65,18 @@ function label(key) {
   return LABELS[key] || key.replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-/** Renders the whole submission as plain text, longest answers last. */
+const isEmail = (v) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v);
+
+/** Renders the whole submission as plain text, known fields first. */
 function renderBody(data) {
+  const keys = [
+    ...ORDER.filter((k) => k in data),
+    ...Object.keys(data).filter((k) => !ORDER.includes(k)),
+  ];
   const lines = [];
-  for (const [key, raw] of Object.entries(data)) {
+  for (const key of keys) {
     if (key === HONEYPOT) continue;
+    const raw = data[key];
     const value = Array.isArray(raw) ? raw.join(', ') : String(raw ?? '').trim();
     if (!value) continue;
     lines.push(value.includes('\n') ? `${label(key)}:\n${value}\n` : `${label(key)}: ${value}`);
@@ -87,19 +123,27 @@ export default {
       return json({ ok: true }, 200, cors);
     }
 
-    const name = pick(data, NAME_KEYS);
-    const email = pick(data, EMAIL_KEYS);
-    if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-      return json({ error: 'A valid email address is required.' }, 400, cors);
+    // Any one contact method is enough — the form lets people give a mobile
+    // number or a Discord handle instead of an email.
+    if (!pick(data, CONTACT_KEYS)) {
+      return json({ error: 'Please give at least one way to reach you.' }, 400, cors);
     }
 
+    const email = pick(data, EMAIL_KEYS);
+    if (email && !isEmail(email)) {
+      return json({ error: 'That email address does not look right.' }, 400, cors);
+    }
+
+    const name = pick(data, NAME_KEYS);
     const host = MAILGUN_HOST[(env.MG_REGION || 'us').toLowerCase()] || MAILGUN_HOST.us;
+
     const form = new FormData();
     form.set('from', `Sortilege Onboarding <onboarding@${env.MG_DOMAIN}>`);
     form.set('to', env.MG_TO);
     form.set('subject', `A seat request${name ? ` — ${name}` : ''}`);
-    form.set('h:Reply-To', name ? `${name} <${email}>` : email);
     form.set('text', renderBody(data));
+    // Only meaningful when they actually gave an address to reply to.
+    if (email) form.set('h:Reply-To', name ? `${name} <${email}>` : email);
 
     const response = await fetch(`https://${host}/v3/${env.MG_DOMAIN}/messages`, {
       method: 'POST',
