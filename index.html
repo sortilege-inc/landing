@@ -279,13 +279,13 @@
 
       <div class="field">
         <span class="field__label" id="lines-label">NOT AT ALL</span>
-        <div class="tagselect" data-name="lines" data-source="CONTENT_TAGS"
-             data-placeholder="Type and press Enter…" aria-labelledby="lines-label"></div>
+        <div class="tagselect" data-name="lines"
+             data-placeholder="Type it and press Enter…" aria-labelledby="lines-label"></div>
       </div>
       <div class="field">
         <span class="field__label" id="veils-label">NOT PROMINENTLY</span>
-        <div class="tagselect" data-name="veils" data-source="CONTENT_TAGS"
-             data-placeholder="Type and press Enter…" aria-labelledby="veils-label"></div>
+        <div class="tagselect" data-name="veils"
+             data-placeholder="Type it and press Enter…" aria-labelledby="veils-label"></div>
       </div>
 
       <div class="field">
@@ -299,7 +299,13 @@
         <h2>Open Games</h2>
       </div>
       <p class="lede">You don't have to pick one of these &mdash; the form above works fine on its own. But if something here already fits, say so.</p>
-      <div class="cards" id="open-games"></div>
+      <div class="carousel">
+        <div class="cards" id="open-games" tabindex="0" role="group" aria-label="Open games, scrollable"></div>
+        <div class="carousel__nav">
+          <button type="button" class="carousel__btn carousel__btn--prev" aria-label="Previous game">&#8592;</button>
+          <button type="button" class="carousel__btn carousel__btn--next" aria-label="Next game">&#8594;</button>
+        </div>
+      </div>
     </section>
 
     <section class="sec">

@@ -240,6 +240,7 @@ a:hover { color: var(--coral); }
   .hero__art { padding: 2rem 2.5rem 0; }
   .hero__body { padding: 1rem 2.5rem 3rem; }
   .sec, .submit-bar, .foot { padding-left: 2.5rem; padding-right: 2.5rem; }
+  .cards { margin: 0 -2.5rem; padding-left: 2.5rem; padding-right: 2.5rem; scroll-padding: 0 2.5rem; }
   .sec { padding-top: 2.5rem; padding-bottom: 2.75rem; }
 }
 
@@ -443,27 +444,67 @@ a:hover { color: var(--coral); }
 
 .switch__text { font-size: 1.02rem; line-height: 1.35; color: var(--ink-soft); }
 
-/* ---------- Open game cards ---------- */
+/* ---------- Open game carousel ---------- */
 
-.cards { display: flex; flex-direction: column; gap: 1rem; }
+.carousel { position: relative; }
 
+.cards {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 17rem;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding: 0 1.5rem;
+  padding-bottom: 0.5rem;
+  /* Bleed to the section edges so a card peeking in reads as "more this way". */
+  margin: 0 -1.5rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  scrollbar-width: thin;
+}
+
+.cards:focus-visible { outline: 2px solid var(--lilac); outline-offset: 4px; }
+
+/* Portrait cards: the art is a band, the body carries the height. */
 .card {
-  display: block;
-  padding: 1.1rem 1.2rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  scroll-snap-align: start;
+  min-height: 26rem;
   background: #fffdf7;
   border: 1px solid rgba(88, 83, 108, 0.3);
-  border-left: 4px solid var(--coral);
   border-radius: 2px;
+  overflow: hidden;
   color: inherit;
 }
 
-.card:hover { border-left-color: var(--plum); }
+.card:hover { border-color: var(--plum); }
+
+.card__art { position: relative; aspect-ratio: 3 / 2; background: var(--surround); }
+
+.card__art img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+.card__status {
+  position: absolute;
+  left: 0;
+  bottom: 0.75rem;
+  padding: 0.34rem 0.7rem;
+  font-family: var(--label);
+  font-size: 0.76rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: var(--coral);
+}
+
+.card__body { display: flex; flex-direction: column; flex: 1; padding: 0.95rem 1.05rem 1.1rem; }
 
 .card__system {
-  margin: 0 0 0.35rem;
+  margin: 0 0 0.3rem;
   font-family: var(--label);
-  font-size: 0.82rem;
-  letter-spacing: 0.16em;
+  font-size: 0.78rem;
+  letter-spacing: 0.15em;
   color: var(--coral);
 }
 
@@ -471,21 +512,64 @@ a:hover { color: var(--coral); }
   margin: 0 0 0.5rem;
   font-family: var(--display);
   font-weight: 600;
-  font-size: 1.2rem;
+  font-size: 1.12rem;
   line-height: 1.2;
   color: var(--plum);
 }
 
-.card__pitch { margin: 0 0 0.75rem; font-size: 0.98rem; line-height: 1.38; color: var(--ink-soft); }
-
-.card__meta { display: flex; flex-wrap: wrap; gap: 0.3rem 0.9rem; }
-
-.card__meta span {
-  font-family: var(--label);
-  font-size: 0.82rem;
-  letter-spacing: 0.08em;
-  color: var(--ink);
+.card__pitch {
+  margin: 0 0 0.9rem;
+  font-size: 0.95rem;
+  line-height: 1.36;
+  color: var(--ink-soft);
 }
+
+.card__meta {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.22rem 0.7rem;
+  margin: auto 0 0;
+  padding-top: 0.8rem;
+  border-top: 1px solid rgba(31, 39, 48, 0.14);
+}
+
+.card__term {
+  margin: 0;
+  font-family: var(--label);
+  font-size: 0.76rem;
+  letter-spacing: 0.1em;
+  color: var(--lilac);
+}
+
+.card__value { margin: 0; font-size: 0.9rem; line-height: 1.3; color: var(--ink); }
+
+.card__cta {
+  margin-top: 0.9rem;
+  font-family: var(--label);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  color: var(--coral);
+}
+
+.carousel__nav { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.9rem; }
+
+.carousel.is-static .carousel__nav { display: none; }
+
+.carousel__btn {
+  width: 2.75rem;
+  height: 2.75rem;
+  font-size: 1.1rem;
+  color: var(--paper);
+  background: var(--plum);
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.carousel__btn:hover:not(:disabled) { background: var(--coral); }
+.carousel__btn:disabled { opacity: 0.3; cursor: default; }
+
+@media (prefers-reduced-motion: reduce) { .cards { scroll-behavior: auto; } }
 
 /* ---------- Discord ---------- */
 

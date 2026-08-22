@@ -25,24 +25,84 @@ if (src) form.querySelector('input[name="src"]').value = src.slice(0, 60);
 /* ---------- Open games ---------- */
 
 const cards = document.getElementById('open-games');
+
 for (const game of window.OPEN_GAMES || []) {
   const a = document.createElement('a');
   a.className = 'card';
   a.href = game.url;
   a.target = '_blank';
   a.rel = 'noopener';
-  const meta = [game.price, game.length, game.schedule, game.format].filter(Boolean);
-  a.innerHTML = `
-    <p class="card__system"></p>
-    <p class="card__title"></p>
-    <p class="card__pitch"></p>
-    <p class="card__meta">${meta.map(() => '<span></span>').join('')}</p>`;
-  // Set text via textContent so game copy can never inject markup.
-  a.querySelector('.card__system').textContent = game.system;
-  a.querySelector('.card__title').textContent = game.title;
-  a.querySelector('.card__pitch').textContent = game.pitch;
-  a.querySelectorAll('.card__meta span').forEach((el, i) => { el.textContent = meta[i]; });
+
+  if (game.image) {
+    const figure = document.createElement('div');
+    figure.className = 'card__art';
+    const img = document.createElement('img');
+    img.src = game.image;
+    img.alt = '';
+    img.loading = 'lazy';
+    img.width = 600;
+    img.height = 400;
+    figure.append(img);
+    if (game.status) {
+      const badge = document.createElement('span');
+      badge.className = 'card__status';
+      badge.textContent = game.status;
+      figure.append(badge);
+    }
+    a.append(figure);
+  }
+
+  const body = document.createElement('div');
+  body.className = 'card__body';
+
+  const make = (cls, text, tag = 'p') => {
+    const el = document.createElement(tag);
+    el.className = cls;
+    el.textContent = text; // textContent: game copy can never inject markup
+    return el;
+  };
+
+  body.append(make('card__system', game.system), make('card__title', game.title));
+  body.append(make('card__pitch', game.pitch));
+
+  const meta = document.createElement('dl');
+  meta.className = 'card__meta';
+  for (const [term, value] of [['When', game.schedule], ['Length', game.length],
+                               ['Where', game.format], ['Cost', game.price]]) {
+    if (!value) continue;
+    meta.append(make('card__term', term, 'dt'), make('card__value', value, 'dd'));
+  }
+  body.append(meta);
+  body.append(make('card__cta', 'View on StartPlaying →', 'span'));
+
+  a.append(body);
   cards.append(a);
+}
+
+/* ---------- Carousel controls ---------- */
+// The track scrolls natively (touch, trackpad, keyboard); the buttons are an
+// affordance on top of it, and hide themselves when everything already fits.
+
+const carousel = document.querySelector('.carousel');
+if (carousel && cards.children.length) {
+  const prev = carousel.querySelector('.carousel__btn--prev');
+  const next = carousel.querySelector('.carousel__btn--next');
+
+  const step = () => cards.firstElementChild.getBoundingClientRect().width + 16;
+  const scrollable = () => cards.scrollWidth - cards.clientWidth > 4;
+
+  function sync() {
+    const max = cards.scrollWidth - cards.clientWidth;
+    carousel.classList.toggle('is-static', !scrollable());
+    prev.disabled = cards.scrollLeft < 8;
+    next.disabled = cards.scrollLeft > max - 8;
+  }
+
+  prev.addEventListener('click', () => cards.scrollBy({ left: -step(), behavior: 'smooth' }));
+  next.addEventListener('click', () => cards.scrollBy({ left: step(), behavior: 'smooth' }));
+  cards.addEventListener('scroll', sync, { passive: true });
+  addEventListener('resize', sync);
+  sync();
 }
 
 const discord = document.getElementById('discord-link');
@@ -63,13 +123,17 @@ function createTagSelect(root) {
   const options = window[root.dataset.source] || [];
   const chosen = [];
 
+  // With no seed list this is strictly write-in: no menu, and no combobox
+  // semantics to promise a popup that will never appear.
+  const hasMenu = options.length > 0;
+
   root.innerHTML = `
     <div class="tagselect__box">
       <span class="tagselect__tags"></span>
-      <input type="text" class="tagselect__input" role="combobox"
-             aria-expanded="false" aria-autocomplete="list" autocomplete="off">
+      <input type="text" class="tagselect__input" autocomplete="off"
+             ${hasMenu ? 'role="combobox" aria-expanded="false" aria-autocomplete="list"' : ''}>
     </div>
-    <ul class="tagselect__menu" role="listbox" hidden></ul>
+    ${hasMenu ? '<ul class="tagselect__menu" role="listbox" hidden></ul>' : ''}
     <span class="tagselect__values"></span>`;
 
   const tags = root.querySelector('.tagselect__tags');
@@ -131,6 +195,7 @@ function createTagSelect(root) {
   }
 
   function openMenu() {
+    if (!hasMenu) return;
     const list = matches();
     menu.textContent = '';
     active = -1;
@@ -149,6 +214,7 @@ function createTagSelect(root) {
   }
 
   function closeMenu() {
+    if (!hasMenu) return;
     menu.hidden = true;
     active = -1;
     input.setAttribute('aria-expanded', 'false');
@@ -156,6 +222,7 @@ function createTagSelect(root) {
   }
 
   function move(step) {
+    if (!hasMenu) return;
     const items = [...menu.children];
     if (!items.length) return;
     items.forEach((li) => li.classList.remove('is-active'));
@@ -173,7 +240,7 @@ function createTagSelect(root) {
     else if (event.key === 'ArrowUp') { event.preventDefault(); move(-1); }
     else if (event.key === 'Enter') {
       event.preventDefault(); // never submit the form from this field
-      const items = [...menu.children];
+      const items = hasMenu ? [...menu.children] : [];
       add(active > -1 && items[active] ? items[active].textContent : input.value);
     } else if (event.key === 'Escape') { closeMenu(); }
     else if (event.key === 'Backspace' && !input.value && chosen.length) { drop(chosen[chosen.length - 1]); }
