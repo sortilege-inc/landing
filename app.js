@@ -172,12 +172,18 @@ function createTagSelect(root) {
   }
 
   function add(value) {
-    const clean = value.trim().slice(0, 80);
+    let clean = value.trim().slice(0, 80);
     if (!clean) return;
+    // Prefer the list's own spelling when the text matches an option.
+    const canonical = options.find((o) => o.toLowerCase() === clean.toLowerCase());
+    if (canonical) clean = canonical;
     if (!chosen.some((c) => c.toLowerCase() === clean.toLowerCase())) chosen.push(clean);
     input.value = '';
-    closeMenu();
     render();
+    // Reopen rather than close: picking one option is usually not the last one,
+    // and the input keeps focus, so a plain focus handler would never re-fire.
+    if (hasMenu && document.activeElement === input) openMenu();
+    else closeMenu();
   }
 
   function drop(value) {
@@ -233,6 +239,8 @@ function createTagSelect(root) {
 
   input.addEventListener('input', openMenu);
   input.addEventListener('focus', openMenu);
+  // focus does not re-fire on an already-focused input, so listen for the tap too.
+  input.addEventListener('click', openMenu);
   input.addEventListener('blur', () => setTimeout(closeMenu, 120));
 
   input.addEventListener('keydown', (event) => {
@@ -246,7 +254,7 @@ function createTagSelect(root) {
     else if (event.key === 'Backspace' && !input.value && chosen.length) { drop(chosen[chosen.length - 1]); }
   });
 
-  root.querySelector('.tagselect__box').addEventListener('click', () => input.focus());
+  root.querySelector('.tagselect__box').addEventListener('click', () => { input.focus(); openMenu(); });
   render();
 }
 
