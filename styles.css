@@ -713,3 +713,101 @@ a:hover { color: var(--coral); }
 .tagselect__option.is-active { color: var(--paper); background: var(--plum); }
 
 .tagselect__values { display: none; }
+
+/* ---------- Step-through ---------- */
+/* Only present once JS has grouped the sections; without it the page stays
+   a single long form and none of this applies. */
+
+.wizard__progress {
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  padding: 0.85rem 1.5rem 0;
+  background: var(--paper);
+  border-bottom: 1px solid rgba(31, 39, 48, 0.14);
+}
+
+.wizard__dots { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.6rem; }
+
+.wizard__dot {
+  width: 1.6rem;
+  height: 1.6rem;
+  padding: 0;
+  font-family: var(--label);
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid rgba(31, 39, 48, 0.28);
+  border-radius: 50%;
+  cursor: default;
+}
+
+.wizard__dot.is-reachable { cursor: pointer; }
+.wizard__dot.is-done { color: var(--paper); background: var(--lilac); border-color: var(--lilac); }
+.wizard__dot.is-current { color: var(--paper); background: var(--coral); border-color: var(--coral); }
+.wizard__dot:focus-visible { outline: 2px solid var(--lilac); outline-offset: 2px; }
+
+.wizard__meta { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+
+.wizard__title {
+  font-family: var(--label);
+  font-size: 0.95rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--plum);
+}
+
+.wizard__count {
+  font-family: var(--label);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  color: var(--ink-soft);
+}
+
+.wizard__bar { height: 3px; margin-top: 0.55rem; background: rgba(31, 39, 48, 0.12); }
+.wizard__bar span { display: block; height: 100%; background: var(--coral); transition: width 0.25s ease; }
+
+.wizard__nav {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0 1.5rem 2rem;
+}
+
+.wizard__btn {
+  flex: 1;
+  padding: 0.85rem 1rem;
+  font-family: var(--label);
+  font-size: 1.1rem;
+  letter-spacing: 0.12em;
+  border: 0;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.wizard__btn--back { color: var(--plum); background: transparent; border: 1px solid rgba(88, 83, 108, 0.5); }
+.wizard__btn--back:disabled { opacity: 0.3; cursor: default; }
+.wizard__btn--next { flex: 2; color: var(--paper); background: var(--plum); }
+.wizard__btn--next:hover { background: var(--coral); }
+
+/* The first visible step already sits under the sticky bar. */
+.is-wizard .sec { border-top: 0; }
+.is-wizard .sec:nth-of-type(even) { background: transparent; }
+
+@media (min-width: 40rem) {
+  .wizard__progress { padding-left: 2.5rem; padding-right: 2.5rem; }
+  .wizard__nav { padding-left: 2.5rem; padding-right: 2.5rem; }
+}
+
+/* Past the first step the hero collapses; the sticky progress bar is the header. */
+.is-stepping .hero__art { display: none; }
+
+.is-stepping .hero__body { padding-top: 1.1rem; padding-bottom: 1.1rem; }
+
+.is-stepping .hero h1 { font-size: 1.35rem; line-height: 1.1; }
+
+.is-stepping .hero h1 br { display: none; }
+
+.is-stepping .hero p,
+.is-stepping .rule-gold { display: none; }
+
+.is-stepping:not(.is-final-step) .foot { display: none; }

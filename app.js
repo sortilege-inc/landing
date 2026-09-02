@@ -325,27 +325,31 @@ function say(message, isError) {
   status.classList.toggle('is-error', Boolean(isError));
 }
 
-/* ---------- Submit ---------- */
-
-form.addEventListener('submit', async (event) => {
-  event.preventDefault();
-
-  // The one hard requirement: some way to reach them.
+/** The one hard requirement: some way to reach them. */
+function contactIsUsable({ reveal = false } = {}) {
   const picked = [...form.querySelectorAll('input[name="contact-methods"]:checked')];
   const usable = picked.filter((pick) => {
     const row = pick.closest('.contact');
     return row.querySelector('input[type="email"], input[type="tel"], input[type="text"]').value.trim();
   });
 
-  if (!usable.length) {
+  if (usable.length) { contactError.hidden = true; return true; }
+  if (reveal) {
     contactError.hidden = false;
     contactError.textContent = picked.length
       ? 'Please fill in the contact method you picked.'
       : 'Please pick at least one way for me to reach you.';
     document.querySelector('.contacts').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    return;
   }
-  contactError.hidden = true;
+  return false;
+}
+
+/* ---------- Submit ---------- */
+
+form.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  if (!contactIsUsable({ reveal: true })) return;
 
   const payload = collect();
 
@@ -377,3 +381,126 @@ form.addEventListener('submit', async (event) => {
     say(`${error.message} — email jordan@sortilege.online instead.`, true);
   }
 });
+
+/* ---------- Step-through ---------- */
+// Progressive enhancement: the markup is one long form and stays that way if
+// this never runs. All fields remain in the DOM the whole time — steps only
+// control visibility — so the payload is identical either way.
+
+function initWizard() {
+  const sections = [...form.querySelectorAll('.sec[data-step]')];
+  if (!sections.length) return;
+
+  const steps = [];
+  for (const section of sections) {
+    const n = Number(section.dataset.step);
+    let step = steps.find((s) => s.n === n);
+    if (!step) steps.push((step = { n, title: section.dataset.stepTitle || `Step ${n}`, sections: [] }));
+    step.sections.push(section);
+  }
+  if (steps.length < 2) return;
+
+  const submitBar = form.querySelector('.submit-bar');
+  let current = 0;
+  let furthest = 0;
+
+  // Progress, above the first step.
+  const progress = document.createElement('div');
+  progress.className = 'wizard__progress';
+  progress.innerHTML = `
+    <div class="wizard__dots"></div>
+    <div class="wizard__meta">
+      <span class="wizard__title"></span>
+      <span class="wizard__count"></span>
+    </div>
+    <div class="wizard__bar"><span></span></div>`;
+  form.prepend(progress);
+
+  const dots = progress.querySelector('.wizard__dots');
+  steps.forEach((step, i) => {
+    const dot = document.createElement('button');
+    dot.type = 'button';
+    dot.className = 'wizard__dot';
+    dot.textContent = String(i + 1);
+    dot.setAttribute('aria-label', `Step ${i + 1}: ${step.title}`);
+    // Jumping back to somewhere already visited is safe; jumping ahead is not.
+    dot.addEventListener('click', () => { if (i <= furthest) go(i); });
+    dots.append(dot);
+  });
+
+  // Back / Next, below the current step.
+  const nav = document.createElement('div');
+  nav.className = 'wizard__nav';
+  nav.innerHTML = `
+    <button type="button" class="wizard__btn wizard__btn--back">&#8592; Back</button>
+    <button type="button" class="wizard__btn wizard__btn--next">Next &#8594;</button>`;
+  submitBar.before(nav);
+  const back = nav.querySelector('.wizard__btn--back');
+  const next = nav.querySelector('.wizard__btn--next');
+
+  function validate(index) {
+    const needsContact = steps[index].sections.some((s) => s.dataset.validate === 'contact');
+    if (!needsContact) return true;
+    return contactIsUsable({ reveal: true });
+  }
+
+  function go(index, { push = true } = {}) {
+    current = Math.max(0, Math.min(index, steps.length - 1));
+    furthest = Math.max(furthest, current);
+
+    sections.forEach((s) => { s.hidden = Number(s.dataset.step) !== steps[current].n; });
+
+    const last = current === steps.length - 1;
+    submitBar.hidden = !last;
+    next.hidden = last;
+    back.disabled = current === 0;
+
+    progress.querySelector('.wizard__title').textContent = steps[current].title;
+    progress.querySelector('.wizard__count').textContent = `Step ${current + 1} of ${steps.length}`;
+    progress.querySelector('.wizard__bar span').style.width = `${((current + 1) / steps.length) * 100}%`;
+    [...dots.children].forEach((dot, i) => {
+      dot.classList.toggle('is-current', i === current);
+      dot.classList.toggle('is-done', i < furthest || (i === furthest && i < current));
+      dot.classList.toggle('is-reachable', i <= furthest);
+      dot.setAttribute('aria-current', i === current ? 'step' : 'false');
+    });
+
+    // The hero is a welcome, not a header — it should not reappear above every
+    // question and push the actual step off-screen.
+    document.body.classList.toggle('is-stepping', current > 0);
+    // The footer is worth showing where someone might want to leave or contact
+    // Jordan directly — the opening and the end — but not between questions.
+    document.body.classList.toggle('is-final-step', last);
+
+    if (push && history.state?.step !== current) {
+      history.pushState({ step: current }, '', location.pathname + location.search);
+    }
+    // Land on the question, not back up at the hero art.
+    const top = progress.getBoundingClientRect().top + scrollY - 12;
+    scrollTo({ top, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  }
+
+  next.addEventListener('click', () => { if (validate(current)) go(current + 1); });
+  back.addEventListener('click', () => go(current - 1));
+
+  // Android/browser back should step backwards, not leave the page.
+  addEventListener('popstate', (event) => {
+    if (typeof event.state?.step === 'number') go(event.state.step, { push: false });
+  });
+
+  // Enter anywhere but a textarea advances instead of submitting early.
+  form.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter') return;
+    if (event.target.matches('textarea, .tagselect__input')) return;
+    if (current < steps.length - 1) {
+      event.preventDefault();
+      if (validate(current)) go(current + 1);
+    }
+  });
+
+  history.replaceState({ step: 0 }, '', location.pathname + location.search);
+  go(0, { push: false });
+  form.classList.add('is-wizard');
+}
+
+initWizard();

@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&amp;family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&amp;family=Bebas+Neue&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=2">
+<link rel="stylesheet" href="styles.css?v=3">
 </head>
 <body>
 <main class="sheet">
@@ -24,7 +24,7 @@
       <img src="assets/art/sortilege-goliath.png" alt="" width="1600" height="985">
     </div>
     <div class="hero__body">
-      <h1>A Seat Is<br>Open At<br>The Table</h1>
+      <h1>A Seat Is <br>Open At <br>The Table</h1>
       <div class="rule-gold"></div>
       <p>Welcome to Sortilege, where Jordan Peacock hosts tabletop roleplaying games for all audiences.</p>
     </div>
@@ -32,7 +32,7 @@
 
   <form class="form" id="onboard" novalidate>
 
-    <section class="sec">
+    <section class="sec" data-step="1" data-step-title="About you">
       <div class="sec__head">
         <h2>You Are</h2>
       </div>
@@ -60,7 +60,7 @@
       </details>
     </section>
 
-    <section class="sec">
+    <section class="sec" data-step="2" data-step-title="Experience">
       <div class="sec__head">
         <h2>What Have You Already Tried?</h2>
       </div>
@@ -84,7 +84,7 @@
       </div>
     </section>
 
-    <section class="sec">
+    <section class="sec" data-step="3" data-step-title="Contact" data-validate="contact">
       <div class="sec__head">
         <h2>How Would You Like To Be Contacted?</h2>
       </div>
@@ -110,7 +110,7 @@
       <p class="error" id="contact-error" role="alert" hidden></p>
     </section>
 
-    <section class="sec">
+    <section class="sec" data-step="4" data-step-title="When">
       <div class="sec__head">
         <h2>When Is Generally Best?<span class="optional">OPTIONAL</span></h2>
       </div>
@@ -210,7 +210,7 @@
       </div>
     </section>
 
-    <section class="sec">
+    <section class="sec" data-step="5" data-step-title="Where">
       <div class="sec__head">
         <h2>Where Is Best?<span class="optional">OPTIONAL</span></h2>
       </div>
@@ -228,7 +228,7 @@
       </div>
     </section>
 
-    <section class="sec">
+    <section class="sec" data-step="5" data-step-title="Where">
       <div class="sec__head">
         <h2>Other Preferences?<span class="optional">OPTIONAL</span></h2>
       </div>
@@ -244,7 +244,7 @@
       </div>
     </section>
 
-    <section class="sec">
+    <section class="sec" data-step="6" data-step-title="Cost">
       <div class="sec__head">
         <h2>Cost<span class="optional">OPTIONAL</span></h2>
       </div>
@@ -257,7 +257,7 @@
       </label>
     </section>
 
-    <section class="sec">
+    <section class="sec" data-step="7" data-step-title="Games">
       <div class="sec__head">
         <h2>What Excites You?<span class="optional">OPTIONAL</span></h2>
       </div>
@@ -275,7 +275,7 @@
       </div>
     </section>
 
-    <section class="sec">
+    <section class="sec" data-step="7" data-step-title="Games">
       <div class="sec__head">
         <h2>Boundaries To Note<span class="optional">OPTIONAL</span></h2>
       </div>
@@ -298,7 +298,7 @@
       </div>
     </section>
 
-    <section class="sec sec--games">
+    <section class="sec sec--games" data-step="8" data-step-title="Open now">
       <div class="sec__head">
         <h2>Open Games</h2>
       </div>
@@ -312,7 +312,7 @@
       </div>
     </section>
 
-    <section class="sec">
+    <section class="sec" data-step="9" data-step-title="Finish">
       <div class="sec__head">
         <h2>Stay In Touch</h2>
       </div>
@@ -350,7 +350,7 @@
   </footer>
 
 </main>
-<script src="data.js?v=2"></script>
-<script src="app.js?v=2"></script>
+<script src="data.js?v=3"></script>
+<script src="app.js?v=3"></script>
 </body>
 </html>
