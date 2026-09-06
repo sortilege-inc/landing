@@ -382,6 +382,66 @@ form.addEventListener('submit', async (event) => {
   }
 });
 
+/* ---------- Availability drag-select ---------- */
+// Tap toggles one cell; dragging paints across many. The first cell decides the
+// direction — starting on an empty cell fills, starting on a filled one clears —
+// which is what makes a wrong drag easy to undo by dragging back over it.
+
+function initAvailabilityDrag() {
+  const grid = document.querySelector('.avail');
+  if (!grid || !window.PointerEvent) return;
+
+  let painting = false;
+  let mode = true;
+
+  const cellAt = (x, y) => {
+    const el = document.elementFromPoint(x, y);
+    return el ? el.closest('.avail__cell') : null;
+  };
+
+  const paint = (cell) => {
+    if (!cell || !grid.contains(cell)) return;
+    const input = cell.querySelector('input[type="checkbox"]');
+    if (!input || input.checked === mode) return;
+    input.checked = mode;
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+  };
+
+  grid.addEventListener('pointerdown', (event) => {
+    const cell = event.target.closest('.avail__cell');
+    if (!cell) return;
+    const input = cell.querySelector('input[type="checkbox"]');
+    if (!input) return;
+
+    // We own the toggle from here. Without this the native label click fires too
+    // and cancels out the change we just made.
+    event.preventDefault();
+
+    painting = true;
+    mode = !input.checked;
+    paint(cell);
+    input.focus({ preventScroll: true });
+    try { grid.setPointerCapture(event.pointerId); } catch { /* capture is a nicety */ }
+  });
+
+  grid.addEventListener('pointermove', (event) => {
+    if (!painting) return;
+    paint(cellAt(event.clientX, event.clientY));
+  });
+
+  const stop = (event) => {
+    if (!painting) return;
+    painting = false;
+    try { grid.releasePointerCapture(event.pointerId); } catch { /* already released */ }
+  };
+
+  grid.addEventListener('pointerup', stop);
+  grid.addEventListener('pointercancel', stop);
+  grid.addEventListener('lostpointercapture', stop);
+
+  grid.classList.add('is-draggable');
+}
+
 /* ---------- Step-through ---------- */
 // Progressive enhancement: the markup is one long form and stays that way if
 // this never runs. All fields remain in the DOM the whole time — steps only
@@ -503,4 +563,5 @@ function initWizard() {
   form.classList.add('is-wizard');
 }
 
+initAvailabilityDrag();
 initWizard();

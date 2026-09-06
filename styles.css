@@ -811,3 +811,12 @@ a:hover { color: var(--coral); }
 .is-stepping .rule-gold { display: none; }
 
 .is-stepping:not(.is-final-step) .foot { display: none; }
+
+/* Drag-to-paint on the availability grid. touch-action on the cells stops a
+   drag from scrolling the page; the day labels keep their default behaviour so
+   the grid can still be scrolled sideways on a narrow screen. */
+.avail.is-draggable .avail__cell { touch-action: none; }
+
+.avail.is-draggable { user-select: none; -webkit-user-select: none; }
+
+.avail__hint { margin: 0.15rem 0 0.55rem; font-size: 0.92rem; font-style: italic; color: var(--ink-soft); }
