@@ -16,7 +16,8 @@ const EXPERIENCE = {
 const form = document.getElementById('onboard');
 let lastSubmission = {};
 const status = document.getElementById('status');
-const submit = form.querySelector('button[type="submit"]');
+// Resolved lazily: the send control is built by the wizard.
+const sendButton = () => document.querySelector('.wizard__skip');
 
 /* ---------- Which printed QR this scan came from ---------- */
 
@@ -400,7 +401,8 @@ form.addEventListener('submit', async (event) => {
     return;
   }
 
-  submit.disabled = true;
+  const button = sendButton();
+  if (button) button.disabled = true;
   say('Sending…');
 
   try {
@@ -417,7 +419,7 @@ form.addEventListener('submit', async (event) => {
 
     showConfirmation();
   } catch (error) {
-    submit.disabled = false;
+    if (button) button.disabled = false;
     say(`${error.message} — email jordan@sortilege.online instead.`, true);
   }
 });
@@ -754,6 +756,7 @@ function initWizard() {
   if (steps.length < 2) return;
 
   const submitBar = form.querySelector('.submit-bar');
+  const intro = document.getElementById('intro');
   let current = 0;
   let furthest = 0;
 
@@ -812,12 +815,19 @@ function initWizard() {
     // Page one can be submitted as-is; everything past it is optional, so the
     // submit bar shows on the first step and the last, and the Next button
     // says what continuing actually costs you.
-    submitBar.hidden = !(first || last);
+    submitBar.hidden = false;
     next.hidden = last;
     next.textContent = first ? 'Continue to optional questions →' : 'Next →';
-    // An escape hatch on every optional step. Not on the first (page one has its
-    // own Submit) and not on the last (Send is already on screen there).
-    skip.hidden = first || last;
+    // The one send control. On the last step there is no "rest" left to skip,
+    // so it simply sends.
+    skip.hidden = false;
+    skip.textContent = last ? 'Send' : 'Skip the rest and send';
+    skip.classList.toggle('is-primary', last);
+
+    // Page one should not look like the front of a seven-step form, so the
+    // numbered progress only appears once someone opts into the optional part.
+    progress.hidden = first;
+    intro.hidden = !first;
     back.hidden = first;
     back.disabled = first;
     nav.classList.toggle('is-single', first);
@@ -842,8 +852,10 @@ function initWizard() {
     if (push && history.state?.step !== current) {
       history.pushState({ step: current }, '', location.pathname + location.search);
     }
-    // Land on the question, not back up at the hero art.
-    const top = progress.getBoundingClientRect().top + scrollY - 12;
+    // Land on the question, not back up at the hero art. The progress bar is
+    // hidden on the first step, so anchor to the form there instead.
+    const anchor = progress.hidden ? form : progress;
+    const top = anchor.getBoundingClientRect().top + scrollY - 12;
     scrollTo({ top, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
   }
 
@@ -860,9 +872,11 @@ function initWizard() {
   form.addEventListener('keydown', (event) => {
     if (event.key !== 'Enter') return;
     if (event.target.matches('textarea, .tagselect__input')) return;
+    event.preventDefault();
     if (current < steps.length - 1) {
-      event.preventDefault();
       if (validate(current)) go(current + 1);
+    } else {
+      form.requestSubmit();
     }
   });
 

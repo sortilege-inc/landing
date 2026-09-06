@@ -920,3 +920,31 @@ a:hover { color: var(--coral); }
 .wizard__skip:hover { color: var(--coral); border-bottom-color: var(--coral); }
 
 .wizard__nav { flex-direction: column; }
+
+/* With the dedicated submit button gone, the send control carries the weight on
+   the final step. */
+.wizard__skip.is-primary {
+  color: var(--paper);
+  background: var(--plum);
+  border-bottom: 0;
+  border-radius: 2px;
+  padding: 0.85rem 1rem;
+  font-size: 1.15rem;
+}
+
+.wizard__skip.is-primary:hover { background: var(--coral); color: var(--paper); }
+.wizard__skip:disabled { opacity: 0.5; cursor: default; }
+
+.intro {
+  margin: 0;
+  padding: 1.6rem 1.5rem 0;
+  color: var(--ink-soft);
+  font-size: 1.02rem;
+  line-height: 1.4;
+}
+
+.submit-bar { border-top: 0; padding-top: 1rem; }
+
+@media (min-width: 40rem) {
+  .intro { padding-left: 2.5rem; padding-right: 2.5rem; }
+}
