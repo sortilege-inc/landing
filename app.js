@@ -14,6 +14,7 @@ const EXPERIENCE = {
 };
 
 const form = document.getElementById('onboard');
+let lastSubmission = {};
 const status = document.getElementById('status');
 const submit = form.querySelector('button[type="submit"]');
 
@@ -317,6 +318,11 @@ function collect() {
     payload[key] = values.length === 1 ? values[0] : values;
   }
   payload.experience = `${slider.value} — ${EXPERIENCE[slider.value]}`;
+  const zone = payload.timezone;
+  if (zone) {
+    payload.timezone = `${zone} (${zoneLabel(zone)})`;
+    Object.assign(payload, winnipegEquivalents(payload, zone));
+  }
   return payload;
 }
 
@@ -333,15 +339,49 @@ function contactIsUsable({ reveal = false } = {}) {
     return row.querySelector('input[type="email"], input[type="tel"], input[type="text"]').value.trim();
   });
 
-  if (usable.length) { contactError.hidden = true; return true; }
-  if (reveal) {
+  if (usable.length) { if (contactError) contactError.hidden = true; return true; }
+  if (reveal && contactError) {
     contactError.hidden = false;
     contactError.textContent = picked.length
       ? 'Please fill in the contact method you picked.'
       : 'Please pick at least one way for me to reach you.';
-    document.querySelector('.contacts').scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
   return false;
+}
+
+/** Page one is the only gate: a name, a way to reach them, and how they'd play. */
+function essentialsAreComplete({ reveal = false } = {}) {
+  const error = document.getElementById('essentials-error');
+  // Clear first: otherwise a message from the previous attempt stays on screen
+  // after the reader has fixed that very thing.
+  if (error) { error.hidden = true; error.textContent = ''; }
+  const fail = (message, focus) => {
+    if (reveal && error) {
+      error.hidden = false;
+      error.textContent = message;
+      (focus || error).scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (focus && focus.focus) focus.focus({ preventScroll: true });
+    }
+    return false;
+  };
+
+  const name = form.querySelector('#name');
+  if (!name.value.trim()) return fail('Please tell me what to call you.', name);
+  if (!contactIsUsable({ reveal: true })) return false;
+
+  const formats = [...form.querySelectorAll('input[name="format"]:checked')];
+  if (!formats.length) return fail('Please say whether you would play online, in person, or both.');
+
+  if (formats.some((f) => f.value === 'Online')) {
+    const zone = form.querySelector('input[name="timezone"]');
+    if (!zone || !zone.value) {
+      return fail('Please pick your time zone so I can work out the overlap.',
+                  document.getElementById('timezone'));
+    }
+  }
+
+  if (error) error.hidden = true;
+  return true;
 }
 
 /* ---------- Submit ---------- */
@@ -349,9 +389,10 @@ function contactIsUsable({ reveal = false } = {}) {
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
 
-  if (!contactIsUsable({ reveal: true })) return;
+  if (!essentialsAreComplete({ reveal: true })) return;
 
   const payload = collect();
+  lastSubmission = payload;
 
   if (!ENDPOINT) {
     console.log('Onboarding payload (not sent — no endpoint configured):', payload);
@@ -374,13 +415,262 @@ form.addEventListener('submit', async (event) => {
       throw new Error(body.error || `HTTP ${response.status}`);
     }
 
-    form.hidden = true;
-    say('Got it. I will be in touch.');
+    showConfirmation();
   } catch (error) {
     submit.disabled = false;
     say(`${error.message} — email jordan@sortilege.online instead.`, true);
   }
 });
+
+/* ---------- Confirmation ---------- */
+// Replaces the form with the open-games roster and the Discord invite. The
+// newsletter tick lives here, past the submit, so it posts on its own.
+
+function showConfirmation() {
+  const done = document.getElementById('done');
+  form.hidden = true;
+  document.body.classList.remove('is-stepping');
+  document.body.classList.add('is-done');
+  if (!done) { say('Got it. I will be in touch.'); return; }
+
+  done.hidden = false;
+  done.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+
+  const newsletter = done.querySelector('input[name="newsletter"]');
+  const note = done.querySelector('#newsletter-note');
+  if (!newsletter) return;
+
+  newsletter.addEventListener('change', async () => {
+    if (!newsletter.checked || !ENDPOINT) return;
+    newsletter.disabled = true;
+    if (note) note.textContent = 'Adding you…';
+    try {
+      await fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: lastSubmission.name || '',
+          email: lastSubmission.email || '',
+          mobile: lastSubmission.mobile || '',
+          discord: lastSubmission.discord || '',
+          newsletter: 'Yes — sign me up',
+          note: 'Newsletter opt-in, added after submitting.',
+        }),
+      });
+      if (note) note.textContent = 'Done — you are on the list.';
+    } catch {
+      newsletter.disabled = false;
+      newsletter.checked = false;
+      if (note) note.textContent = 'That did not go through. Email jordan@sortilege.online and I will add you.';
+    }
+  });
+}
+
+/* ---------- Time zone ---------- */
+// Only asked when someone plays online. The grid stays in their own local time;
+// the Winnipeg equivalent is worked out here and carried in the payload, so
+// Jordan never has to do the arithmetic and the player never sees it.
+
+const HOME_ZONE = 'America/Winnipeg';
+
+const SLOT_HOURS = {
+  'Mornings': [8, 12],
+  'Early Afternoons': [12, 15],
+  'Late Afternoons': [15, 18],
+  'Evenings': [18, 21],
+  'After Dark': [21, 24],
+};
+
+const DAY_NAMES = { mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', fri: 'Fri', sat: 'Sat', sun: 'Sun' };
+const DAY_INDEX = { sun: 0, mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6 };
+
+function zoneList() {
+  try {
+    if (typeof Intl.supportedValuesOf === 'function') return Intl.supportedValuesOf('timeZone');
+  } catch { /* fall through */ }
+  return ['America/Winnipeg', 'America/Toronto', 'America/Vancouver', 'America/Chicago',
+          'America/New_York', 'America/Denver', 'America/Los_Angeles', 'Europe/London',
+          'Europe/Dublin', 'Europe/Berlin', 'Europe/Paris', 'Australia/Sydney',
+          'Pacific/Auckland', 'Asia/Tokyo', 'Asia/Singapore', 'Asia/Kolkata'];
+}
+
+/** Minutes a zone is offset from UTC at a given instant. */
+function zoneOffset(timeZone, date) {
+  // Floor to a whole minute first: Date.UTC below has no seconds field, so any
+  // seconds on the input would come back as a spurious minute of offset.
+  const at = new Date(Math.floor(date.getTime() / 60000) * 60000);
+  const parts = Object.fromEntries(new Intl.DateTimeFormat('en-US', {
+    timeZone: timeZone, hour12: false, year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit',
+  }).formatToParts(at).map((p) => [p.type, p.value]));
+  const asUTC = Date.UTC(+parts.year, parts.month - 1, +parts.day, +parts.hour % 24, +parts.minute);
+  return Math.round((asUTC - at.getTime()) / 60000);
+}
+
+function zoneLabel(timeZone) {
+  try {
+    const mins = zoneOffset(timeZone, new Date());
+    const sign = mins < 0 ? '-' : '+';
+    const abs = Math.abs(mins);
+    const h = Math.floor(abs / 60);
+    const m = abs % 60;
+    return `UTC${sign}${h}${m ? ':' + String(m).padStart(2, '0') : ''}`;
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * Converts each ticked day/slot into its Winnipeg equivalent.
+ * Uses a date two weeks out as the reference, so the answer reflects the DST
+ * rules likely in force when a game actually runs rather than today's.
+ */
+function winnipegEquivalents(payload, timeZone) {
+  if (!timeZone || timeZone === HOME_ZONE) return {};
+
+  const reference = new Date(Date.now() + 14 * 86400000);
+  const out = {};
+
+  for (const [key, dayKey] of Object.entries(DAY_NAMES).map(([k, v]) => [`avail-${k}`, k])) {
+    const raw = payload[key];
+    if (!raw) continue;
+    const slots = Array.isArray(raw) ? raw : [raw];
+    const spans = [];
+
+    for (const slot of slots) {
+      const hours = SLOT_HOURS[slot];
+      if (!hours) continue;
+      // Anchor the slot to the next occurrence of that weekday, in their zone.
+      const anchor = new Date(reference);
+      anchor.setUTCDate(anchor.getUTCDate() + ((DAY_INDEX[dayKey] - anchor.getUTCDay() + 7) % 7));
+
+      const shift = (hour) => {
+        const guess = Date.UTC(anchor.getUTCFullYear(), anchor.getUTCMonth(), anchor.getUTCDate(), hour, 0);
+        // guess is that wall-clock time read as UTC; correct it into a real instant.
+        const instant = new Date(guess - zoneOffset(timeZone, new Date(guess)) * 60000);
+        const local = new Intl.DateTimeFormat('en-GB', {
+          timeZone: HOME_ZONE, hour12: false, weekday: 'short', hour: '2-digit', minute: '2-digit',
+        }).formatToParts(instant);
+        const bits = Object.fromEntries(local.map((x) => [x.type, x.value]));
+        return { day: bits.weekday, time: `${bits.hour}:${bits.minute}` };
+      };
+
+      const from = shift(hours[0]);
+      // Hour 24 is valid here — Date.UTC rolls it to 00:00 the next day, which is
+      // what "until midnight" means. A fractional hour would be truncated instead.
+      const to = shift(hours[1]);
+      const label = from.day === to.day
+        ? `${from.day} ${from.time}–${to.time}`
+        : `${from.day} ${from.time} – ${to.day} ${to.time}`;
+      spans.push(`${slot} = ${label}`);
+    }
+    if (spans.length) out[`avail-${dayKey}-winnipeg`] = spans;
+  }
+  return out;
+}
+
+/** Single-select type-to-filter box, used for the time zone. */
+function createCombo(root, options, { placeholder = '', name = '' } = {}) {
+  root.innerHTML = `
+    <input type="text" class="combo__input" role="combobox" aria-expanded="false"
+           aria-autocomplete="list" autocomplete="off">
+    <ul class="combo__menu" role="listbox" hidden></ul>
+    <input type="hidden" name="${name}" class="combo__value">`;
+
+  const input = root.querySelector('.combo__input');
+  const menu = root.querySelector('.combo__menu');
+  const value = root.querySelector('.combo__value');
+  input.placeholder = placeholder;
+  input.id = root.dataset.inputId || input.id;
+  let active = -1;
+
+  const pretty = (z) => `${z.replace(/_/g, ' ')}  ·  ${zoneLabel(z)}`;
+
+  function close() {
+    menu.hidden = true;
+    active = -1;
+    input.setAttribute('aria-expanded', 'false');
+  }
+
+  function open() {
+    const q = input.value.trim().toLowerCase().replace(/\s+/g, '');
+    const list = options
+      .filter((z) => !q || z.toLowerCase().replace(/[_/]/g, '').includes(q))
+      .slice(0, 8);
+    menu.textContent = '';
+    active = -1;
+    if (!list.length) return close();
+    for (const zone of list) {
+      const li = document.createElement('li');
+      li.className = 'combo__option';
+      li.role = 'option';
+      li.textContent = pretty(zone);
+      li.addEventListener('mousedown', (e) => { e.preventDefault(); choose(zone); });
+      menu.append(li);
+    }
+    menu.hidden = false;
+    input.setAttribute('aria-expanded', 'true');
+  }
+
+  function choose(zone) {
+    value.value = zone;
+    input.value = pretty(zone);
+    close();
+    root.dispatchEvent(new CustomEvent('combo:change', { detail: zone, bubbles: true }));
+  }
+
+  function move(step) {
+    const items = [...menu.children];
+    if (!items.length) return;
+    items.forEach((li) => li.classList.remove('is-active'));
+    active = (active + step + items.length) % items.length;
+    items[active].classList.add('is-active');
+    items[active].scrollIntoView({ block: 'nearest' });
+  }
+
+  input.addEventListener('input', () => { value.value = ''; open(); });
+  input.addEventListener('focus', open);
+  input.addEventListener('click', open);
+  input.addEventListener('blur', () => setTimeout(close, 120));
+  input.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowDown') { event.preventDefault(); menu.hidden ? open() : move(1); }
+    else if (event.key === 'ArrowUp') { event.preventDefault(); move(-1); }
+    else if (event.key === 'Enter') {
+      event.preventDefault();
+      const items = [...menu.children];
+      const pick = active > -1 ? items[active] : items[0];
+      if (pick) choose(options.find((z) => pretty(z) === pick.textContent));
+    } else if (event.key === 'Escape') close();
+  });
+
+  return { choose, get value() { return value.value; } };
+}
+
+function initTimeZone() {
+  const field = document.getElementById('timezone-field');
+  const host = document.getElementById('timezone-combo');
+  if (!field || !host) return null;
+
+  const combo = createCombo(host, zoneList(), {
+    placeholder: 'Start typing a city…', name: 'timezone',
+  });
+  host.querySelector('.combo__input').id = 'timezone';
+
+  // Pre-fill with the browser's own zone — right for most people, editable for the rest.
+  try {
+    const guess = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (guess) combo.choose(guess);
+  } catch { /* no guess is fine */ }
+
+  const sync = () => {
+    const online = [...form.querySelectorAll('input[name="format"]:checked')]
+      .some((i) => i.value === 'Online');
+    field.hidden = !online;
+  };
+  form.querySelectorAll('input[name="format"]').forEach((i) => i.addEventListener('change', sync));
+  sync();
+  return combo;
+}
 
 /* ---------- Availability drag-select ---------- */
 // Tap toggles one cell; dragging paints across many. The first cell decides the
@@ -494,14 +784,14 @@ function initWizard() {
   nav.innerHTML = `
     <button type="button" class="wizard__btn wizard__btn--back">&#8592; Back</button>
     <button type="button" class="wizard__btn wizard__btn--next">Next &#8594;</button>`;
+  nav.querySelector('.wizard__btn--next').textContent = 'Next →';
   submitBar.before(nav);
   const back = nav.querySelector('.wizard__btn--back');
   const next = nav.querySelector('.wizard__btn--next');
 
   function validate(index) {
-    const needsContact = steps[index].sections.some((s) => s.dataset.validate === 'contact');
-    if (!needsContact) return true;
-    return contactIsUsable({ reveal: true });
+    const needs = steps[index].sections.some((s) => s.dataset.validate === 'essentials');
+    return needs ? essentialsAreComplete({ reveal: true }) : true;
   }
 
   function go(index, { push = true } = {}) {
@@ -511,9 +801,16 @@ function initWizard() {
     sections.forEach((s) => { s.hidden = Number(s.dataset.step) !== steps[current].n; });
 
     const last = current === steps.length - 1;
-    submitBar.hidden = !last;
+    const first = current === 0;
+    // Page one can be submitted as-is; everything past it is optional, so the
+    // submit bar shows on the first step and the last, and the Next button
+    // says what continuing actually costs you.
+    submitBar.hidden = !(first || last);
     next.hidden = last;
-    back.disabled = current === 0;
+    next.textContent = first ? 'Continue to optional questions →' : 'Next →';
+    back.hidden = first;
+    back.disabled = first;
+    nav.classList.toggle('is-single', first);
 
     progress.querySelector('.wizard__title').textContent = steps[current].title;
     progress.querySelector('.wizard__count').textContent = `Step ${current + 1} of ${steps.length}`;
@@ -563,5 +860,6 @@ function initWizard() {
   form.classList.add('is-wizard');
 }
 
+initTimeZone();
 initAvailabilityDrag();
 initWizard();

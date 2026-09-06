@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&amp;family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&amp;family=Bebas+Neue&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=4">
+<link rel="stylesheet" href="styles.css?v=5">
 </head>
 <body>
 <main class="sheet">
@@ -32,37 +32,79 @@
 
   <form class="form" id="onboard" novalidate>
 
-    <section class="sec" data-step="1" data-step-title="About you">
+    <section class="sec" data-step="1" data-step-title="Essentials" data-validate="essentials">
       <div class="sec__head">
         <h2>You Are</h2>
       </div>
+      <p class="lede">Four quick things, then you're done. Everything after this is optional.</p>
+
       <div class="field">
         <label for="name">PREFERRED NAME</label>
         <input type="text" id="name" name="name" autocomplete="name">
       </div>
 
-      <details class="more">
-        <summary>More about you<span class="optional">OPTIONAL</span></summary>
-        <div class="more__body">
-          <div class="field">
-            <label for="pronouns">PRONOUNS</label>
-            <input type="text" id="pronouns" name="pronouns">
+      <div class="field">
+        <span class="field__label">HOW SHOULD I REACH YOU?</span>
+        <p class="hint">Pick at least one, and mark which you'd rather I use.</p>
+        <div class="contacts" role="group" aria-label="Contact methods">
+          <div class="contact">
+            <label class="contact__pick"><input type="checkbox" name="contact-methods" value="Email"><span>EMAIL</span></label>
+            <input type="email" id="email" name="email" autocomplete="email" inputmode="email" placeholder="you@example.com" disabled>
+            <label class="contact__pref"><input type="radio" name="contact-preferred" value="Email" disabled><span>Preferred</span></label>
           </div>
-          <div class="field">
-            <label for="generation">AGE GROUP</label>
-            <input type="text" id="generation" name="generation">
+          <div class="contact">
+            <label class="contact__pick"><input type="checkbox" name="contact-methods" value="Mobile"><span>MOBILE (TEXT)</span></label>
+            <input type="tel" id="mobile" name="mobile" autocomplete="tel" inputmode="tel" placeholder="(204) 555-0134" disabled>
+            <label class="contact__pref"><input type="radio" name="contact-preferred" value="Mobile" disabled><span>Preferred</span></label>
           </div>
-          <div class="field">
-            <label for="about">ANYTHING ELSE</label>
-            <input type="text" id="about" name="about">
+          <div class="contact">
+            <label class="contact__pick"><input type="checkbox" name="contact-methods" value="Discord"><span>DISCORD</span></label>
+            <input type="text" id="discord" name="discord" placeholder="username" disabled>
+            <label class="contact__pref"><input type="radio" name="contact-preferred" value="Discord" disabled><span>Preferred</span></label>
           </div>
         </div>
-      </details>
+        <p class="error" id="contact-error" role="alert" hidden></p>
+      </div>
+
+      <div class="field">
+        <span class="field__label" id="format-label">HOW WOULD YOU PLAY?</span>
+        <div class="chips" role="group" aria-labelledby="format-label">
+          <label class="chip"><input type="checkbox" name="format" value="Online"><span>Online</span></label>
+          <label class="chip"><input type="checkbox" name="format" value="In person (Winnipeg)"><span>In person (Winnipeg)</span></label>
+        </div>
+      </div>
+
+      <div class="field" id="timezone-field" hidden>
+        <label for="timezone">YOUR TIME ZONE</label>
+        <p class="hint">Start typing a city &mdash; I'll work out the overlap with Winnipeg.</p>
+        <div class="combo" id="timezone-combo"></div>
+      </div>
+
+      <p class="error" id="essentials-error" role="alert" hidden></p>
     </section>
 
-    <section class="sec" data-step="2" data-step-title="Experience">
+    <section class="sec" data-step="2" data-step-title="About you">
       <div class="sec__head">
-        <h2>What Have You Already Tried?</h2>
+        <h2>More About You<span class="optional">OPTIONAL</span></h2>
+      </div>
+
+      <div class="field">
+        <label for="pronouns">PRONOUNS</label>
+        <input type="text" id="pronouns" name="pronouns">
+      </div>
+      <div class="field">
+        <label for="generation">AGE GROUP</label>
+        <input type="text" id="generation" name="generation">
+      </div>
+      <div class="field">
+        <label for="about">ANYTHING ELSE</label>
+        <input type="text" id="about" name="about">
+      </div>
+    </section>
+
+    <section class="sec" data-step="3" data-step-title="Experience">
+      <div class="sec__head">
+        <h2>What Have You Already Tried?<span class="optional">OPTIONAL</span></h2>
       </div>
       <p class="lede">Drag to wherever you actually are. There is no wrong answer &mdash; I assume zero knowledge going in.</p>
 
@@ -82,32 +124,6 @@
         <label for="experience-notes">ANYTHING TO ADD<span class="optional">OPTIONAL</span></label>
         <textarea id="experience-notes" name="experience-notes"></textarea>
       </div>
-    </section>
-
-    <section class="sec" data-step="3" data-step-title="Contact" data-validate="contact">
-      <div class="sec__head">
-        <h2>How Would You Like To Be Contacted?</h2>
-      </div>
-      <p class="lede">Pick at least one, and mark which you'd rather I use.</p>
-
-      <div class="contacts" role="group" aria-label="Contact methods">
-        <div class="contact">
-          <label class="contact__pick"><input type="checkbox" name="contact-methods" value="Email"><span>EMAIL</span></label>
-          <input type="email" id="email" name="email" autocomplete="email" inputmode="email" placeholder="you@example.com" disabled>
-          <label class="contact__pref"><input type="radio" name="contact-preferred" value="Email" disabled><span>Preferred</span></label>
-        </div>
-        <div class="contact">
-          <label class="contact__pick"><input type="checkbox" name="contact-methods" value="Mobile"><span>MOBILE (TEXT)</span></label>
-          <input type="tel" id="mobile" name="mobile" autocomplete="tel" inputmode="tel" placeholder="(204) 555-0134" disabled>
-          <label class="contact__pref"><input type="radio" name="contact-preferred" value="Mobile" disabled><span>Preferred</span></label>
-        </div>
-        <div class="contact">
-          <label class="contact__pick"><input type="checkbox" name="contact-methods" value="Discord"><span>DISCORD</span></label>
-          <input type="text" id="discord" name="discord" placeholder="username" disabled>
-          <label class="contact__pref"><input type="radio" name="contact-preferred" value="Discord" disabled><span>Preferred</span></label>
-        </div>
-      </div>
-      <p class="error" id="contact-error" role="alert" hidden></p>
     </section>
 
     <section class="sec" data-step="4" data-step-title="When">
@@ -213,7 +229,7 @@
 
     <section class="sec" data-step="5" data-step-title="Where">
       <div class="sec__head">
-        <h2>Where Is Best?<span class="optional">OPTIONAL</span></h2>
+        <h2>Where In Winnipeg?<span class="optional">OPTIONAL</span></h2>
       </div>
 
       <div class="field">
@@ -223,7 +239,6 @@
           <label class="chip"><input type="checkbox" name="location" value="Wolseley"><span>Wolseley</span></label>
           <label class="chip"><input type="checkbox" name="location" value="Elmwood"><span>Elmwood</span></label>
           <label class="chip"><input type="checkbox" name="location" value="Polo Park"><span>Polo Park</span></label>
-          <label class="chip"><input type="checkbox" name="location" value="Online"><span>Online</span></label>
         </div>
         <input type="text" name="location-other" placeholder="somewhere else?" class="write-in" aria-label="Another location">
       </div>
@@ -299,35 +314,6 @@
       </div>
     </section>
 
-    <section class="sec sec--games" data-step="8" data-step-title="Open now">
-      <div class="sec__head">
-        <h2>Open Games</h2>
-      </div>
-      <p class="lede">These are games that are already available that you are welcome to join. The information you've provided already will allow me to plan, schedule and inform you of future games you might enjoy.</p>
-      <div class="carousel">
-        <div class="cards" id="open-games" tabindex="0" role="group" aria-label="Open games, scrollable"></div>
-        <div class="carousel__nav">
-          <button type="button" class="carousel__btn carousel__btn--prev" aria-label="Previous game">&#8592;</button>
-          <button type="button" class="carousel__btn carousel__btn--next" aria-label="Next game">&#8594;</button>
-        </div>
-      </div>
-    </section>
-
-    <section class="sec" data-step="9" data-step-title="Finish">
-      <div class="sec__head">
-        <h2>Stay In Touch</h2>
-      </div>
-
-      <a class="discord" id="discord-link" href="#" rel="noopener">JOIN THE SORTILEGE DISCORD</a>
-      <p class="hint">Where tables are announced, filled, and played.</p>
-
-      <label class="switch">
-        <input type="checkbox" name="newsletter" value="Yes — sign me up">
-        <span class="switch__track" aria-hidden="true"></span>
-        <span class="switch__text">Add me to the email newsletter.</span>
-      </label>
-    </section>
-
     <!-- Honeypot: hidden from people, irresistible to bots. -->
     <div class="trap" aria-hidden="true">
       <label for="website">Website</label>
@@ -344,6 +330,43 @@
     </div>
   </form>
 
+  <section class="done" id="done" hidden>
+    <div class="done__head">
+      <p class="kicker">SENT</p>
+      <h2 class="done__title">Got It</h2>
+      <p class="done__lede">I read these myself and reply to arrange a seat. In the meantime &mdash; here's what's open now, and where the tables get announced.</p>
+    </div>
+    <section class="sec sec--games">
+      <div class="sec__head">
+        <h2>Open Games</h2>
+      </div>
+      <p class="lede">These are games that are already available that you are welcome to join. The information you've provided already will allow me to plan, schedule and inform you of future games you might enjoy.</p>
+      <div class="carousel">
+        <div class="cards" id="open-games" tabindex="0" role="group" aria-label="Open games, scrollable"></div>
+        <div class="carousel__nav">
+          <button type="button" class="carousel__btn carousel__btn--prev" aria-label="Previous game">&#8592;</button>
+          <button type="button" class="carousel__btn carousel__btn--next" aria-label="Next game">&#8594;</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="sec__head">
+        <h2>Stay In Touch</h2>
+      </div>
+
+      <a class="discord" id="discord-link" href="#" rel="noopener">JOIN THE SORTILEGE DISCORD</a>
+      <p class="hint">Where tables are announced, filled, and played.</p>
+
+      <label class="switch">
+        <input type="checkbox" name="newsletter" value="Yes — sign me up">
+        <span class="switch__track" aria-hidden="true"></span>
+        <span class="switch__text">Add me to the email newsletter.</span>
+      </label>
+      <p class="hint" id="newsletter-note" role="status" aria-live="polite"></p>
+    </section>
+  </section>
+
   <footer class="foot">
     <img class="tile" src="assets/tiles/s.svg" alt="">
     <p class="foot__who">JORDAN PEACOCK &amp; COLLABORATORS &middot; WINNIPEG</p>
@@ -351,7 +374,7 @@
   </footer>
 
 </main>
-<script src="data.js?v=4"></script>
-<script src="app.js?v=4"></script>
+<script src="data.js?v=5"></script>
+<script src="app.js?v=5"></script>
 </body>
 </html>

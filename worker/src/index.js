@@ -22,6 +22,8 @@ const LABELS = {
   about: 'About them',
   experience: 'Experience',
   'experience-notes': 'Experience notes',
+  format: 'Plays',
+  timezone: 'Time zone',
   'contact-methods': 'Contact via',
   'contact-preferred': 'Prefers',
   email: 'Email',
@@ -29,6 +31,11 @@ const LABELS = {
   discord: 'Discord',
   'avail-mon': 'Mon', 'avail-tue': 'Tue', 'avail-wed': 'Wed', 'avail-thu': 'Thu',
   'avail-fri': 'Fri', 'avail-sat': 'Sat', 'avail-sun': 'Sun',
+  'avail-mon-winnipeg': 'Mon → Winnipeg', 'avail-tue-winnipeg': 'Tue → Winnipeg',
+  'avail-wed-winnipeg': 'Wed → Winnipeg', 'avail-thu-winnipeg': 'Thu → Winnipeg',
+  'avail-fri-winnipeg': 'Fri → Winnipeg', 'avail-sat-winnipeg': 'Sat → Winnipeg',
+  'avail-sun-winnipeg': 'Sun → Winnipeg',
+  note: 'Note',
   frequency: 'How often',
   duration: 'How long',
   location: 'Where',
@@ -49,11 +56,15 @@ const LABELS = {
 const ORDER = [
   'name', 'pronouns', 'pronouns-other', 'generation', 'about',
   'contact-methods', 'contact-preferred', 'email', 'mobile', 'discord',
+  'format', 'timezone',
   'experience', 'experience-notes',
-  'avail-mon', 'avail-tue', 'avail-wed', 'avail-thu', 'avail-fri', 'avail-sat', 'avail-sun',
+  'avail-mon', 'avail-mon-winnipeg', 'avail-tue', 'avail-tue-winnipeg',
+  'avail-wed', 'avail-wed-winnipeg', 'avail-thu', 'avail-thu-winnipeg',
+  'avail-fri', 'avail-fri-winnipeg', 'avail-sat', 'avail-sat-winnipeg',
+  'avail-sun', 'avail-sun-winnipeg',
   'frequency', 'duration', 'location', 'location-other', 'company', 'company-other',
   'systems', 'vibes', 'lines', 'veils', 'boundaries-notes',
-  'cost-assistance', 'newsletter', 'src',
+  'cost-assistance', 'newsletter', 'note', 'src',
 ];
 
 function pick(data, keys) {

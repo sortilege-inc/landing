@@ -820,3 +820,80 @@ a:hover { color: var(--coral); }
 .avail.is-draggable { user-select: none; -webkit-user-select: none; }
 
 .avail__hint { margin: 0.15rem 0 0.55rem; font-size: 0.92rem; font-style: italic; color: var(--ink-soft); }
+
+/* ---------- Time-zone combobox ---------- */
+
+.combo { position: relative; }
+
+.combo__input {
+  width: 100%;
+  padding: 0.6rem 0.7rem;
+  font-family: var(--serif);
+  font-size: 1.02rem;
+  color: var(--ink);
+  background: #fffdf7;
+  border: 1px solid rgba(31, 39, 48, 0.28);
+  border-radius: 2px;
+}
+
+.combo__menu {
+  position: absolute;
+  z-index: 20;
+  left: 0;
+  right: 0;
+  max-height: 13rem;
+  margin: 0.25rem 0 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+  background: #fffdf7;
+  border: 1px solid rgba(88, 83, 108, 0.45);
+  border-radius: 2px;
+  box-shadow: 0 6px 18px rgba(31, 39, 48, 0.14);
+}
+
+.combo__option { padding: 0.6rem 0.75rem; font-size: 0.98rem; color: var(--ink-soft); cursor: pointer; }
+.combo__option:hover, .combo__option.is-active { color: var(--paper); background: var(--plum); }
+
+/* ---------- Confirmation ---------- */
+
+.done { padding-bottom: 1rem; }
+
+.done__head { padding: 2rem 1.5rem 0; }
+
+.kicker {
+  margin: 0 0 0.5rem;
+  font-family: var(--label);
+  font-size: 0.8rem;
+  letter-spacing: 0.22em;
+  color: var(--coral);
+}
+
+.done__title {
+  margin: 0;
+  font-family: var(--label);
+  font-weight: 400;
+  font-size: 2.1rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--plum);
+}
+
+.done__lede { margin: 0.8rem 0 0; color: var(--ink-soft); }
+
+.done .sec { border-top: 0; }
+.done .sec:nth-of-type(even) { background: transparent; }
+
+/* The single-button first step should not leave a gap where Back was. */
+.wizard__nav.is-single .wizard__btn--next { flex: 1; }
+
+.is-done .hero__art { display: none; }
+.is-done .hero__body { padding-top: 1.1rem; padding-bottom: 1.1rem; }
+.is-done .hero h1 { font-size: 1.35rem; line-height: 1.1; }
+.is-done .hero h1 br,
+.is-done .hero p,
+.is-done .rule-gold { display: none; }
+
+@media (min-width: 40rem) {
+  .done__head { padding-left: 2.5rem; padding-right: 2.5rem; }
+}
