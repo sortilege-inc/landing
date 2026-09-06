@@ -651,16 +651,19 @@ function initTimeZone() {
   const host = document.getElementById('timezone-combo');
   if (!field || !host) return null;
 
-  const combo = createCombo(host, zoneList(), {
+  let zones = zoneList();
+  try {
+    const guess = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (guess && zones.includes(guess)) zones = [guess, ...zones.filter((z) => z !== guess)];
+  } catch { /* an unsorted list is still fine */ }
+
+  const combo = createCombo(host, zones, {
     placeholder: 'Start typing a city…', name: 'timezone',
   });
   host.querySelector('.combo__input').id = 'timezone';
 
-  // Pre-fill with the browser's own zone — right for most people, editable for the rest.
-  try {
-    const guess = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    if (guess) combo.choose(guess);
-  } catch { /* no guess is fine */ }
+  // Deliberately left blank: a pre-filled box has to be cleared before you can
+  // type. The browser's own zone leads the list instead, so it is still one tap.
 
   const sync = () => {
     const online = [...form.querySelectorAll('input[name="format"]:checked')]
@@ -782,12 +785,16 @@ function initWizard() {
   const nav = document.createElement('div');
   nav.className = 'wizard__nav';
   nav.innerHTML = `
-    <button type="button" class="wizard__btn wizard__btn--back">&#8592; Back</button>
-    <button type="button" class="wizard__btn wizard__btn--next">Next &#8594;</button>`;
+    <div class="wizard__row">
+      <button type="button" class="wizard__btn wizard__btn--back">&#8592; Back</button>
+      <button type="button" class="wizard__btn wizard__btn--next">Next &#8594;</button>
+    </div>
+    <button type="button" class="wizard__skip">Skip the rest and send</button>`;
   nav.querySelector('.wizard__btn--next').textContent = 'Next →';
   submitBar.before(nav);
   const back = nav.querySelector('.wizard__btn--back');
   const next = nav.querySelector('.wizard__btn--next');
+  const skip = nav.querySelector('.wizard__skip');
 
   function validate(index) {
     const needs = steps[index].sections.some((s) => s.dataset.validate === 'essentials');
@@ -808,6 +815,9 @@ function initWizard() {
     submitBar.hidden = !(first || last);
     next.hidden = last;
     next.textContent = first ? 'Continue to optional questions →' : 'Next →';
+    // An escape hatch on every optional step. Not on the first (page one has its
+    // own Submit) and not on the last (Send is already on screen there).
+    skip.hidden = first || last;
     back.hidden = first;
     back.disabled = first;
     nav.classList.toggle('is-single', first);
@@ -839,6 +849,7 @@ function initWizard() {
 
   next.addEventListener('click', () => { if (validate(current)) go(current + 1); });
   back.addEventListener('click', () => go(current - 1));
+  skip.addEventListener('click', () => form.requestSubmit());
 
   // Android/browser back should step backwards, not leave the page.
   addEventListener('popstate', (event) => {

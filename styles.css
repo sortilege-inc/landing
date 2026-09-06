@@ -897,3 +897,26 @@ a:hover { color: var(--coral); }
 @media (min-width: 40rem) {
   .done__head { padding-left: 2.5rem; padding-right: 2.5rem; }
 }
+
+/* The wizard's escape hatch: quieter than Back/Next, so it reads as a way out
+   rather than the expected path. */
+.wizard__row { display: flex; gap: 0.75rem; }
+
+.wizard__skip {
+  display: block;
+  width: 100%;
+  margin-top: 0.9rem;
+  padding: 0.6rem 0.5rem;
+  font-family: var(--label);
+  font-size: 0.95rem;
+  letter-spacing: 0.12em;
+  color: var(--ink-soft);
+  background: none;
+  border: 0;
+  border-bottom: 1px solid rgba(31, 39, 48, 0.22);
+  cursor: pointer;
+}
+
+.wizard__skip:hover { color: var(--coral); border-bottom-color: var(--coral); }
+
+.wizard__nav { flex-direction: column; }
