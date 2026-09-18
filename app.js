@@ -26,87 +26,6 @@ if (src) form.querySelector('input[name="src"]').value = src.slice(0, 60);
 
 /* ---------- Open games ---------- */
 
-const cards = document.getElementById('open-games');
-
-for (const game of window.OPEN_GAMES || []) {
-  const a = document.createElement('a');
-  a.className = 'card';
-  a.href = game.url;
-  a.target = '_blank';
-  a.rel = 'noopener';
-
-  if (game.image) {
-    const figure = document.createElement('div');
-    figure.className = 'card__art';
-    const img = document.createElement('img');
-    img.src = game.image;
-    img.alt = '';
-    img.loading = 'lazy';
-    img.width = 600;
-    img.height = 400;
-    figure.append(img);
-    if (game.status) {
-      const badge = document.createElement('span');
-      badge.className = 'card__status';
-      badge.textContent = game.status;
-      figure.append(badge);
-    }
-    a.append(figure);
-  }
-
-  const body = document.createElement('div');
-  body.className = 'card__body';
-
-  const make = (cls, text, tag = 'p') => {
-    const el = document.createElement(tag);
-    el.className = cls;
-    el.textContent = text; // textContent: game copy can never inject markup
-    return el;
-  };
-
-  body.append(make('card__system', game.system), make('card__title', game.title));
-  body.append(make('card__pitch', game.pitch));
-
-  const meta = document.createElement('dl');
-  meta.className = 'card__meta';
-  for (const [term, value] of [['When', game.schedule], ['Length', game.length],
-                               ['Where', game.format], ['Cost', game.price]]) {
-    if (!value) continue;
-    meta.append(make('card__term', term, 'dt'), make('card__value', value, 'dd'));
-  }
-  body.append(meta);
-  body.append(make('card__cta', 'View on StartPlaying →', 'span'));
-
-  a.append(body);
-  cards.append(a);
-}
-
-/* ---------- Carousel controls ---------- */
-// The track scrolls natively (touch, trackpad, keyboard); the buttons are an
-// affordance on top of it, and hide themselves when everything already fits.
-
-const carousel = document.querySelector('.carousel');
-if (carousel && cards.children.length) {
-  const prev = carousel.querySelector('.carousel__btn--prev');
-  const next = carousel.querySelector('.carousel__btn--next');
-
-  const step = () => cards.firstElementChild.getBoundingClientRect().width + 16;
-  const scrollable = () => cards.scrollWidth - cards.clientWidth > 4;
-
-  function sync() {
-    const max = cards.scrollWidth - cards.clientWidth;
-    carousel.classList.toggle('is-static', !scrollable());
-    prev.disabled = cards.scrollLeft < 8;
-    next.disabled = cards.scrollLeft > max - 8;
-  }
-
-  prev.addEventListener('click', () => cards.scrollBy({ left: -step(), behavior: 'smooth' }));
-  next.addEventListener('click', () => cards.scrollBy({ left: step(), behavior: 'smooth' }));
-  cards.addEventListener('scroll', sync, { passive: true });
-  addEventListener('resize', sync);
-  sync();
-}
-
 const discord = document.getElementById('discord-link');
 if (window.DISCORD_INVITE) {
   discord.href = window.DISCORD_INVITE;
@@ -425,7 +344,7 @@ form.addEventListener('submit', async (event) => {
 });
 
 /* ---------- Confirmation ---------- */
-// Replaces the form with the open-games roster and the Discord invite. The
+// Replaces the form with the confirmation view. The
 // newsletter tick lives here, past the submit, so it posts on its own.
 
 function showConfirmation() {
