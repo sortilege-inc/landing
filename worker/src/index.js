@@ -49,12 +49,17 @@ const LABELS = {
   'boundaries-notes': 'Boundary notes',
   'company-other': 'Other preferences (write-in)',
   newsletter: 'Newsletter',
+  event: 'Event',
+  ref: 'Reference',
+  waitlist: 'WAITLIST',
+  'session-dates': 'Dates that work',
+  'session-dates-other': 'Dates (write-in)',
   src: 'Scanned from',
 };
 
 /** Presentation order; anything not listed is appended in arrival order. */
 const ORDER = [
-  'name', 'pronouns', 'pronouns-other', 'generation', 'about',
+  'event', 'name', 'pronouns', 'pronouns-other', 'generation', 'about',
   'contact-methods', 'contact-preferred', 'email', 'mobile', 'discord',
   'format', 'timezone',
   'experience', 'experience-notes',
@@ -63,8 +68,9 @@ const ORDER = [
   'avail-fri', 'avail-fri-winnipeg', 'avail-sat', 'avail-sat-winnipeg',
   'avail-sun', 'avail-sun-winnipeg',
   'frequency', 'duration', 'location', 'location-other', 'company', 'company-other',
+  'session-dates', 'session-dates-other',
   'systems', 'vibes', 'lines', 'veils', 'boundaries-notes',
-  'cost-assistance', 'newsletter', 'note', 'src',
+  'cost-assistance', 'newsletter', 'note', 'src', 'ref', 'waitlist',
 ];
 
 function pick(data, keys) {
@@ -89,7 +95,7 @@ function renderBody(data) {
   ];
   const lines = [];
   for (const key of keys) {
-    if (key === HONEYPOT) continue;
+    if (key === HONEYPOT || key === 'kind' || key === 'cc') continue;
     const raw = data[key];
     const value = Array.isArray(raw) ? raw.join(', ') : String(raw ?? '').trim();
     if (!value) continue;
@@ -154,10 +160,21 @@ export default {
     const form = new FormData();
     form.set('from', `Sortilege Onboarding <onboarding@${env.MG_DOMAIN}>`);
     form.set('to', env.MG_TO);
-    form.set('subject', `A seat request${name ? ` — ${name}` : ''}`);
+    // Both sites post here. The landing form sends no `kind` and keeps the
+    // original subject; the registration site sends "Registration — <event>",
+    // so the two are told apart at a glance in the inbox.
+    const kind = typeof data.kind === 'string' && data.kind.trim()
+      ? data.kind.trim().slice(0, 60)
+      : 'A seat request';
+    form.set('subject', `${kind}${name ? ` — ${name}` : ''}`);
     form.set('text', renderBody(data));
     // Only meaningful when they actually gave an address to reply to.
     if (email) form.set('h:Reply-To', name ? `${name} <${email}>` : email);
+    // The registration site asks for `cc: true` so the person who signed up gets
+    // their own copy as the confirmation. The landing form sends no `cc` and is
+    // unaffected — it is an intake, not a booking, and copying people in on it
+    // would be a surprise.
+    if (data.cc === true && email) form.set('cc', email);
 
     const response = await fetch(`https://${host}/v3/${env.MG_DOMAIN}/messages`, {
       method: 'POST',

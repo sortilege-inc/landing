@@ -160,7 +160,12 @@ fieldset.bare > legend { padding: 0; }
 
 .field { margin-top: 1.35rem; }
 
-.field > label {
+/* Both spellings of a field label: <label> where there is one control to point
+   at, and a <span> where the control is a group. They must look identical — the
+   span had no rule of its own, so every group label ("HOW SHOULD I REACH YOU?",
+   "SYSTEMS", "DAYS & TIMES") silently fell back to the body serif. */
+.field > label,
+.field__label {
   display: block;
   margin-bottom: 0.4rem;
   font-family: var(--label);
