@@ -57,3 +57,12 @@ in ~1.5s; with it, `HTTP 400` (the expected "no token" reply) in ~1.1s.
 `--network-family-autoselection-attempt-timeout=2000` also works.
 
 This applies to every Node fetch-based tool on this machine.
+
+## Capture to D1 (interested-parties)
+
+`store()` in `src/index.js` keeps each accepted submission in the D1 database
+`sortilege-interested-parties` (schema in `migrations/`), so answers survive a failed
+email and can be sorted and queried locally with `../../interested-parties`. It only runs
+when `wrangler.toml` has a `DB` binding; without one the Worker is mail-only, exactly as
+before. When it is bound, a submission that was stored but not mailed still answers 200.
+Turning it on: `../../interested-parties/docs/CAPTURE.md`.

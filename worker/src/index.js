@@ -116,6 +116,30 @@ function corsHeaders(env, request) {
   };
 }
 
+/**
+ * Keeps the submission in D1 for interested-parties (../interested-parties), so an
+ * answer survives even when the email does not. Only runs when the DB binding exists;
+ * without it the Worker behaves exactly as before. Returns the row id, or null.
+ */
+async function store(env, request, data) {
+  if (!env.DB) return null;
+  const { [HONEYPOT]: _trap, ...kept } = data;
+  try {
+    const row = await env.DB.prepare(
+      'INSERT INTO submissions (received_at, origin, kind, payload) VALUES (?, ?, ?, ?) RETURNING id',
+    ).bind(
+      new Date().toISOString(),
+      (request.headers.get('Origin') || '').slice(0, 200),
+      typeof data.kind === 'string' ? data.kind.trim().slice(0, 60) : '',
+      JSON.stringify(kept),
+    ).first();
+    return row ? row.id : null;
+  } catch (error) {
+    console.error('D1 store failed', error);
+    return null;
+  }
+}
+
 function json(body, status, headers) {
   return new Response(JSON.stringify(body), {
     status,
@@ -124,7 +148,7 @@ function json(body, status, headers) {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const cors = corsHeaders(env, request);
 
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
@@ -154,6 +178,8 @@ export default {
       return json({ error: 'That email address does not look right.' }, 400, cors);
     }
 
+    const stored = await store(env, request, data);
+
     const name = pick(data, NAME_KEYS);
     const host = MAILGUN_HOST[(env.MG_REGION || 'us').toLowerCase()] || MAILGUN_HOST.us;
 
@@ -176,17 +202,29 @@ export default {
     // would be a surprise.
     if (data.cc === true && email) form.set('cc', email);
 
-    const response = await fetch(`https://${host}/v3/${env.MG_DOMAIN}/messages`, {
-      method: 'POST',
-      headers: { Authorization: `Basic ${btoa(`api:${env.MAILGUN_API_KEY}`)}` },
-      body: form,
-    });
-
-    if (!response.ok) {
+    let sent = false;
+    try {
+      const response = await fetch(`https://${host}/v3/${env.MG_DOMAIN}/messages`, {
+        method: 'POST',
+        headers: { Authorization: `Basic ${btoa(`api:${env.MAILGUN_API_KEY}`)}` },
+        body: form,
+      });
+      sent = response.ok;
       // Log upstream detail for us; never return it to the browser.
-      console.error('Mailgun rejected the send', response.status, await response.text());
-      return json({ error: 'Could not send right now.' }, 502, cors);
+      if (!sent) console.error('Mailgun rejected the send', response.status, await response.text());
+    } catch (error) {
+      console.error('Mailgun unreachable', error);
     }
+
+    if (stored !== null) {
+      ctx.waitUntil(env.DB.prepare('UPDATE submissions SET mail_status = ? WHERE id = ?')
+        .bind(sent ? 'sent' : 'failed', stored).run()
+        .catch((error) => console.error('D1 mail_status update failed', error)));
+    }
+
+    // Stored but not mailed still counts: the answers are safe in D1 and show up in
+    // interested-parties on the next sync. Neither stored nor mailed is a failure.
+    if (!sent && stored === null) return json({ error: 'Could not send right now.' }, 502, cors);
 
     return json({ ok: true }, 200, cors);
   },
