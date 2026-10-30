@@ -14,10 +14,21 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&amp;family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&amp;family=Bebas+Neue&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=10">
+<link rel="stylesheet" href="styles.css?v=11">
 </head>
 <body>
 <main class="sheet">
+
+    <!-- Sortilege has two front doors and a reader arrives at whichever the QR
+         code pointed at, so each names the other. The half you are on is a span
+         and not a link, because there is nowhere for it to go. Keep the two
+         labels and the order identical on rsvp.sortilege.online, or the pair
+         stops reading as one control when somebody crosses between them. -->
+    <nav class="siteswitch" aria-label="Sortilege sites">
+      <span class="siteswitch__on" aria-current="page">Find a Table</span>
+      <a class="siteswitch__off" href="https://rsvp.sortilege.online/">Take a Seat</a>
+    </nav>
+
 
   <header class="hero">
     <div class="hero__art">

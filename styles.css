@@ -39,6 +39,53 @@ body {
   min-height: 100vh;
 }
 
+/* ---------- Site switch ---------- */
+/* Two front doors: this site asks what somebody wants and matches them to a
+   table, rsvp.sortilege.online takes a booking for one they have already
+   picked. Sits above the hero on both pages here and on its opposite number,
+   so crossing over feels like one switch rather than two separate links.
+
+   Square and full-bleed, with no margin under it: the coral half runs straight
+   into the coral hero below, which is what makes the bar read as part of the
+   page you are on rather than a control floating above it. Inset it, round it
+   or give it a bottom border and a pale line appears between the two corals. */
+
+.siteswitch {
+  display: flex;
+  font-family: var(--label);
+  font-size: 0.74rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.siteswitch > * {
+  flex: 1;
+  padding: 0.62rem 0.4rem;
+  line-height: 1;
+  text-align: center;
+  text-decoration: none;
+}
+
+.siteswitch__on {
+  color: var(--paper);
+  background: var(--coral);
+}
+
+/* Ink rather than a pale tone: the page background outside the sheet is
+   --surround, so anything near it loses the half's edge at desktop widths. */
+.siteswitch__off {
+  color: var(--paper);
+  background: var(--ink);
+}
+
+.siteswitch__off:hover { background: var(--ink-soft); }
+
+/* Links are not in the global focus ring, so this one says it itself. */
+.siteswitch__off:focus-visible {
+  outline: 2px solid var(--lilac);
+  outline-offset: -2px;
+}
+
 /* ---------- Hero ---------- */
 /* The art is black line work on white; multiply drops the white to coral. */
 
